@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SQLReplicator": {
+      "commandName": "Project",
+      "commandLineArgs": "S1ToS2.txt"
+    }
+  }
+}
