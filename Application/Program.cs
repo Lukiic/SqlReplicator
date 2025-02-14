@@ -1,7 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
 using Serilog;
+using SQLReplicator.Domain.Interfaces;
+using SQLReplicator.Domain.Services;
 using SQLReplicator.Services.FileServices;
 using SQLReplicator.Services.LoggerServices;
+using SQLReplicator.Services.SqlServices;
 using System.Data.SqlClient;
 
 namespace SQLReplicator.Application
@@ -66,7 +69,7 @@ namespace SQLReplicator.Application
             }
             #endregion
 
-            
+            IExecuteSqlQueryService executeSqlQueryService = new ExecuteSqlQueryService(srcConnection);
 
             #region ClosingServerConnections
             srcConnection.Close();

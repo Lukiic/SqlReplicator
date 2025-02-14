@@ -31,6 +31,11 @@ namespace SQLReplicator.Domain.Models
 
         public List<string> ReadValues()
         {
+            if (!_reader.Read())
+            {
+                return new List<string>();
+            }
+
             List<string> values = new List<string>();
 
             for (int i = 0; i < _reader.FieldCount; ++i)
