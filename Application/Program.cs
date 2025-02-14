@@ -69,7 +69,13 @@ namespace SQLReplicator.Application
             }
             #endregion
 
-            IExecuteSqlQueryService executeSqlQueryService = new ExecuteSqlQueryService(srcConnection);
+            #region InitializingServices
+            IExecuteSqlQueryService executeQueriesSrc = new ExecuteSqlQueryService(srcConnection);
+            IExecuteSqlCommandService executeCommandsSrc = new ExecuteSqlCommandService(srcConnection);
+            IExecuteSqlCommandService executeCommandsDest = new ExecuteSqlCommandService(destConnection);
+            #endregion
+
+
 
             #region ClosingServerConnections
             srcConnection.Close();
