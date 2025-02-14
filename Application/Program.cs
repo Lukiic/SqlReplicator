@@ -26,17 +26,16 @@ namespace SQLReplicator.Application
             #region ValidatingFileData
             List<string> dataFromFile = FileImportService.LoadData(filePath);
 
-            if (dataFromFile.Count < 4)
+            if (dataFromFile.Count != 3)
             {
                 Log.Error("File doesn't include necessary data.");
-                Console.WriteLine("Expected: Two SQL connection strings, Last change version (default 0), Table name");
+                Console.WriteLine("Expected: Source server connection string, destination server connection string, Table name");
                 return;
             }
 
-            string srcConnectionString = dataFromFile[0].Trim();
+            string srcConnectionString = dataFromFile[0];
             string destConnectionString = dataFromFile[1];
-            string lastChangeVersion = dataFromFile[2];
-            string tableName = dataFromFile[3];
+            string tableName = dataFromFile[2];
             #endregion
 
             #region ConnectingToServers
@@ -67,7 +66,7 @@ namespace SQLReplicator.Application
             }
             #endregion
 
-
+            
 
             #region ClosingServerConnections
             srcConnection.Close();
