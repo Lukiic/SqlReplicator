@@ -75,6 +75,23 @@ namespace SQLReplicator.Application
             IExecuteSqlCommandService executeCommandsDest = new ExecuteSqlCommandService(destConnection);
             #endregion
 
+            #region SettingUpSourceServerForTrackingChanges
+            ICreateChangeTrackingTableService createTableService = new CreateChangeTrackingTableService(executeCommandsSrc);
+            ICreateTriggerService createTriggerService = new CreateTriggerService(executeCommandsSrc);
+
+            if (!createTableService.CreateCTTable(tableName))
+            {
+                Log.Error($"Error while creating change tracking table on source server - {tableName} table.");
+                return;
+            }
+
+            if(!createTriggerService.CreateTrigger(tableName))
+            {
+                Log.Error($"Error while creating trigger on source server - {tableName} table.");
+                return;
+            }
+            #endregion
+
 
 
             #region ClosingServerConnections
