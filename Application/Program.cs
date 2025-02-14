@@ -1,7 +1,8 @@
-﻿using Serilog;
+﻿using Microsoft.Data.SqlClient;
+using Serilog;
 using SQLReplicator.Services.FileServices;
 using SQLReplicator.Services.LoggerServices;
-using System.Reflection.Metadata.Ecma335;
+using System.Data.SqlClient;
 
 namespace SQLReplicator.Application
 {
@@ -15,7 +16,8 @@ namespace SQLReplicator.Application
             #region ValidatingApplicationArguments
             if (args.Length != 1)
             {
-                Log.Error("Wrong number of application arguments. Expected: filePath");
+                Log.Error("Wrong number of application arguments.");
+                Console.WriteLine("Expected: filePath");
                 return;
             }
             string filePath = args[0];
@@ -26,16 +28,53 @@ namespace SQLReplicator.Application
 
             if (dataFromFile.Count < 4)
             {
-                Log.Error("File doesn't include necessary data. Expected: Two SQL connection strings, Last change version (default 0), Table name");
+                Log.Error("File doesn't include necessary data.");
+                Console.WriteLine("Expected: Two SQL connection strings, Last change version (default 0), Table name");
                 return;
             }
 
-            string connectionToServer1 = dataFromFile[0];
-            string connectionToServer2 = dataFromFile[1];
+            string srcConnectionString = dataFromFile[0].Trim();
+            string destConnectionString = dataFromFile[1];
             string lastChangeVersion = dataFromFile[2];
             string tableName = dataFromFile[3];
             #endregion
 
+            #region ConnectingToServers
+            SqlConnection srcConnection = new SqlConnection(srcConnectionString);
+            try
+            {
+                srcConnection.Open();
+                Log.Information("Connection to source server is opened.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Log.Error("Connection to source server can't be opened.");
+                return;
+            }
+
+            SqlConnection destConnection = new SqlConnection(destConnectionString);
+            try
+            {
+                destConnection.Open();
+                Log.Information("Connection to destination server is opened.");
+            }
+            catch (Exception)
+            {
+                srcConnection.Close();
+                Log.Error("Connection to destination server can't be opened.");
+                return;
+            }
+            #endregion
+
+
+
+            #region ClosingServerConnections
+            srcConnection.Close();
+            Log.Information("Connection to source server is closed.");
+            destConnection.Close();
+            Log.Information("Connection to destination server is closed.");
+            #endregion
 
             Log.Information("Application has finished replication.");
             LoggerService.CloseLogger();
