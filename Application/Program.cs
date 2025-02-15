@@ -93,8 +93,9 @@ namespace SQLReplicator.Application
             }
             #endregion
 
-
+            #region GettingDmlCommandsToBeExecuted
             IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeCommandsSrc, executeQueriesSrc);
+            #endregion
 
             #region ClosingServerConnections
             srcConnection.Close();
