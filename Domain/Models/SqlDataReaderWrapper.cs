@@ -17,6 +17,12 @@ namespace SQLReplicator.Domain.Models
             _reader = reader;
         }
 
+        public void Dispose()
+        {
+            _reader.Close();
+            _reader.Dispose();
+        }
+
         public List<string> ReadAttributes()
         {
             List<string> attributes = new List<string>();
