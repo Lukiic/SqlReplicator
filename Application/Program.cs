@@ -6,6 +6,7 @@ using SQLReplicator.Services.FileServices;
 using SQLReplicator.Services.LoggerServices;
 using SQLReplicator.Services.SqlServices;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace SQLReplicator.Application
 {
@@ -92,7 +93,7 @@ namespace SQLReplicator.Application
             }
             #endregion
 
-
+            IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeCommandsSrc, executeQueriesSrc);
 
             #region ClosingServerConnections
             srcConnection.Close();
