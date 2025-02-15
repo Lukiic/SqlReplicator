@@ -2,11 +2,11 @@
 using Serilog;
 using SQLReplicator.Domain.Interfaces;
 using SQLReplicator.Domain.Services;
+using SQLReplicator.Services.ChangeTrackingServices;
+using SQLReplicator.Services.CommandExecutionServices;
+using SQLReplicator.Services.CommandPreparationServices;
 using SQLReplicator.Services.FileServices;
 using SQLReplicator.Services.LoggerServices;
-using SQLReplicator.Services.SqlServices;
-using System.Data.SqlClient;
-using System.Diagnostics;
 
 namespace SQLReplicator.Application
 {
@@ -92,6 +92,7 @@ namespace SQLReplicator.Application
                 return;
             }
             #endregion
+
 
             IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeCommandsSrc, executeQueriesSrc);
 
