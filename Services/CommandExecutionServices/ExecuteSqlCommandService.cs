@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SQLReplicator.Services.SqlServices
+namespace SQLReplicator.Services.CommandExecutionServices
 {
     public class ExecuteSqlCommandService : IExecuteSqlCommandService
     {

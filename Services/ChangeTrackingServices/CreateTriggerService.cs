@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SQLReplicator.Services.SqlServices
+namespace SQLReplicator.Services.ChangeTrackingServices
 {
     public class CreateTriggerService : ICreateTriggerService
     {
@@ -19,7 +19,7 @@ namespace SQLReplicator.Services.SqlServices
 
         public bool CreateTrigger(string tableName)
         {
-			string command = $@"IF NOT EXISTS (SELECT * FROM sys.triggers WHERE name = 'TrackChanges{tableName}')
+            string command = $@"IF NOT EXISTS (SELECT * FROM sys.triggers WHERE name = 'TrackChanges{tableName}')
 								BEGIN
 									EXEC('
 										CREATE TRIGGER TrackChanges{tableName}
@@ -54,17 +54,17 @@ namespace SQLReplicator.Services.SqlServices
 									')
 								END;";
 
-			bool isCreated = true;
-			try
-			{
-				executeSqlCommandService.ExecuteCommand(command);
-			}
-			catch (Exception)
-			{
-				isCreated = false;
-			}
+            bool isCreated = true;
+            try
+            {
+                executeSqlCommandService.ExecuteCommand(command);
+            }
+            catch (Exception)
+            {
+                isCreated = false;
+            }
 
-			return isCreated;
+            return isCreated;
         }
     }
 }
