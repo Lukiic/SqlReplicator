@@ -33,7 +33,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
             attributes.RemoveAt(attributes.Count - 1);  // Removing 'Operation' attribute (attribute of Change Tracking table, not of the table whose changes are tracked)
 
             int numOfRows = listOfValues.Count;
-            Log.Information($"There are {numOfRows} new changes on {tableName} table.");
+            Log.Information($"There are {numOfRows} new rows on {tableName} Change Tracking table.");
 
             for (int i = 0; i < numOfRows; ++i)    // Reading all rows of change tracking table
             {

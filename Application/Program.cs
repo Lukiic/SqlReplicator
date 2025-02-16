@@ -100,6 +100,11 @@ namespace SQLReplicator.Application
             List<string> commandsForDestServer = sqlCommandsGeneration.GetCommands(tableName);
             #endregion
 
+            #region ExecutingCommandsOnDestinationServer
+            IExecuteListOfCommandsService executeListOfCommands = new ExecuteListOfCommandsService(executeCommandsDest);
+            executeListOfCommands.ExecuteCommands(commandsForDestServer);
+            #endregion
+
             #region ClosingServerConnections
             srcConnection.Close();
             Log.Information("Connection to source server is closed.");
