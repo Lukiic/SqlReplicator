@@ -19,7 +19,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
 
         public static string GetUpdateCommand(string tableName, List<string> attributes, List<string> newValues, List<string> oldValues)
         {
-            string setFormat = string.Join(", ", attributes.Zip(oldValues, (a, v) => $"{a} = '{v}'"));
+            string setFormat = string.Join(", ", attributes.Zip(newValues, (a, v) => $"{a} = '{v}'"));
             string conditionFormat = string.Join(" AND ", attributes.Zip(oldValues, (a, v) => $"{a} = '{v}'"));
             
             return $"UPDATE {tableName} SET {setFormat} WHERE {conditionFormat};";

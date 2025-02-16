@@ -35,28 +35,30 @@ namespace SQLReplicator.Domain.Models
             return attributes;
         }
 
-        public List<string> ReadValues()
+        public List<List<string>> ReadValues()      // Inner list represents one row of table
         {
-            if (!_reader.Read())
+            List<List<string>> allValues = new List<List<string>>();
+
+            while (_reader.Read())
             {
-                return new List<string>();
+                List<string> row = new List<string>();
+
+                for (int i = 0; i < _reader.FieldCount; ++i)
+                {
+                    if (_reader.IsDBNull(i))
+                    {
+                        row.Add("");
+                    }
+                    else
+                    {
+                        row.Add(_reader.GetValue(i).ToString());
+                    }
+                }
+
+                allValues.Add(row);
             }
 
-            List<string> values = new List<string>();
-
-            for (int i = 0; i < _reader.FieldCount; ++i)
-            {
-                if (_reader.IsDBNull(i))
-                {
-                    values.Add("");
-                }
-                else
-                {
-                    values.Add(_reader.GetValue(i).ToString());
-                }
-            }
-
-            return values;
+            return allValues;
         }
     }
 }

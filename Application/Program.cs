@@ -95,6 +95,9 @@ namespace SQLReplicator.Application
 
             #region GettingDmlCommandsToBeExecuted
             IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeCommandsSrc, executeQueriesSrc);
+
+            ISqlCommandsGenerationService sqlCommandsGeneration = new SqlCommandsGenerationService(changeTrackingDataService);
+            List<string> commandsForDestServer = sqlCommandsGeneration.GetCommands(tableName);
             #endregion
 
             #region ClosingServerConnections

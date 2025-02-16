@@ -39,7 +39,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 											IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
 											BEGIN
 												INSERT INTO {tableName}Changes
-												SELECT *, ''N''						-- N -> New updated values
+												SELECT *, ''U''						-- U -> New updated values
 												FROM inserted;
 
 												INSERT INTO {tableName}Changes
