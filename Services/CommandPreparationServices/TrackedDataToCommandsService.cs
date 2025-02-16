@@ -1,4 +1,5 @@
-﻿using SQLReplicator.Domain.Interfaces;
+﻿using Serilog;
+using SQLReplicator.Domain.Interfaces;
 using SQLReplicator.Domain.Services;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,17 @@ namespace SQLReplicator.Services.CommandPreparationServices
 
         public List<string> GetCommands(string tableName)
         {
-            IDataReaderWrapper dataReader = _changeTrackingDataService.LoadData(tableName);
+            IDataReaderWrapper dataReader;
+            try
+            {
+                dataReader = _changeTrackingDataService.LoadData(tableName);
+            }
+            catch (Exception)
+            {
+                Log.Warning($"Failed to load data from {tableName}Changes table");
+                return new List<string>();
+            }
+
             List<string> attributes = dataReader.ReadAttributes();
             List<List<string>> listOfValues = dataReader.ReadValues();  // Inner list represents one row of Change Tracking table
 

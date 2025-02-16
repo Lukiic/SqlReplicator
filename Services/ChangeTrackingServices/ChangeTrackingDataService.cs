@@ -1,4 +1,5 @@
-﻿using SQLReplicator.Domain.Interfaces;
+﻿using Serilog;
+using SQLReplicator.Domain.Interfaces;
 using SQLReplicator.Domain.Models;
 using SQLReplicator.Domain.Services;
 using System;
@@ -24,7 +25,14 @@ namespace SQLReplicator.Services.ChangeTrackingServices
         {
             string command = $"DELETE FROM {tableName}Changes";
 
-            _executeSqlCommandService.ExecuteCommand(command);
+            try
+            {
+                _executeSqlCommandService.ExecuteCommand(command);
+            }
+            catch (Exception)
+            {
+                Log.Warning($"Failed to delete data from {tableName}Changes table");
+            }
         }
 
         public IDataReaderWrapper LoadData(string tableName)

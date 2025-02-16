@@ -1,4 +1,5 @@
-﻿using SQLReplicator.Domain.Services;
+﻿using Serilog;
+using SQLReplicator.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,19 @@ namespace SQLReplicator.Services.CommandExecutionServices
 
         public void ExecuteCommands(List<string> commands)
         {
+            int i = 0;
+
             foreach (string command in commands)
             {
-                _executeSqlCommandService.ExecuteCommand(command);
+                try
+                {
+                    _executeSqlCommandService.ExecuteCommand(command);
+                    Log.Information($"Executed command number: {++i}");
+                }
+                catch (Exception)
+                {
+                    Log.Warning($"Failed to execute command: {command}");
+                }
             }
         }
     }
