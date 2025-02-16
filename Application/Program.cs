@@ -95,9 +95,10 @@ namespace SQLReplicator.Application
 
             #region GettingDmlCommandsToBeExecuted
             IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeCommandsSrc, executeQueriesSrc);
+            ISqlCommandsGenerationService sqlCommandsGeneration = new SqlCommandsGenerationService();
+            ITrackedDataToCommandsService trackedDataToCommands = new TrackedDataToCommandsService(changeTrackingDataService, sqlCommandsGeneration);
 
-            ISqlCommandsGenerationService sqlCommandsGeneration = new SqlCommandsGenerationService(changeTrackingDataService);
-            List<string> commandsForDestServer = sqlCommandsGeneration.GetCommands(tableName);
+            List<string> commandsForDestServer = trackedDataToCommands.GetCommands(tableName);
             #endregion
 
             #region ExecutingCommandsOnDestinationServer

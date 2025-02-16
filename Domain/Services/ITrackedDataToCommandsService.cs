@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SQLReplicator.Domain.Services
 {
-    public interface ISqlCommandsGenerationService
+    public interface ITrackedDataToCommandsService
     {
-        public List<string> GetCommands(string tableName, List<string> attributes, List<List<string>> listOfValues);
+        public List<string> GetCommands(string tableName);
     }
 }

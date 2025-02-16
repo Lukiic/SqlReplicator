@@ -11,26 +11,10 @@ namespace SQLReplicator.Services.CommandPreparationServices
 {
     public class SqlCommandsGenerationService : ISqlCommandsGenerationService
     {
-        private IChangeTrackingDataService _changeTrackingDataService;
-
-        public SqlCommandsGenerationService(IChangeTrackingDataService changeTrackingDataService)
-        {
-            _changeTrackingDataService = changeTrackingDataService;
-        }
-
-        public List<string> GetCommands(string tableName)
+        public List<string> GetCommands(string tableName, List<string> changeTrackingAttributes, List<List<string>> listOfValues)
         {
             List<string> commands = new List<string>();
-
-            IDataReaderWrapper dataReader = _changeTrackingDataService.LoadData(tableName);
-            List<string> attributes = dataReader.ReadAttributes();
-            List<List<string>> listOfValues = dataReader.ReadValues();      // Rows of Change Tracking table
-
-            dataReader.Dispose();
-            _changeTrackingDataService.DeleteData(tableName);   // Data has been loaded, so it is now deleted from table
-
-
-            attributes.RemoveAt(attributes.Count - 1);  // Removing 'Operation' attribute (attribute of Change Tracking table, not of the table whose changes are tracked)
+            List<string> trackedTableAttributes = changeTrackingAttributes.GetRange(0, changeTrackingAttributes.Count - 1); // Tracked table doesn't have 'Operation' column, so it's removed
 
             int numOfRows = listOfValues.Count;
             Log.Information($"There are {numOfRows} new rows on {tableName} Change Tracking table.");
@@ -38,17 +22,16 @@ namespace SQLReplicator.Services.CommandPreparationServices
             for (int i = 0; i < numOfRows; ++i)    // Reading all rows of change tracking table
             {
                 List<string> values = listOfValues[i];
-                char operation = values.ElementAt(values.Count - 1).ElementAt(0);   // 'Operation' is the last column of Change Tracking table
-                values.RemoveAt(values.Count - 1);  // Removing value for 'Operation' attribute
+                char operation = values.ElementAt(values.Count - 1).ElementAt(0);
 
                 switch(operation)
                 {
                     case 'I':   // INSERT operation
-                        ProcessInsertCommand(tableName, attributes, values, commands);
+                        ProcessInsertCommand(tableName, changeTrackingAttributes, trackedTableAttributes, values, commands);
                         break;
 
                     case 'D':   // DELETE operation
-                        ProcessDeleteCommand(tableName, attributes, values, commands);
+                        ProcessDeleteCommand(tableName, changeTrackingAttributes, trackedTableAttributes, values, commands);
                         break;
 
                     case 'U':   // Update operation -> Always 2 rows in Change Tracking table. One with new, and other with old values
@@ -60,7 +43,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
 
                         ++i;
                         List<string> oldValues = listOfValues[i];
-                        ProcessUpdateCommand(tableName, attributes, values, commands, oldValues);
+                        ProcessUpdateCommand(tableName, changeTrackingAttributes, trackedTableAttributes, values, commands, oldValues);
                         break;
 
                     default:
@@ -72,19 +55,30 @@ namespace SQLReplicator.Services.CommandPreparationServices
             return commands;
         }
 
-        private void ProcessInsertCommand(string tableName, List<string> attributes, List<string> values, List<string> commands)
+        /*
+            Processing Change Tracking table data:
+                1) Add command for corresponding DML operation
+                2) Add command for deleting row from Change Tracking table (changes which are result of replication should not be tracked - prevent loop)
+        */
+        private void ProcessInsertCommand(string tableName, List<string> changeTrackingAttributes, List<string> trackedTableAttributes, List<string> values, List<string> commands)
         {
-            commands.Add(SqlSyntaxFormattingService.GetInsertCommand(tableName, attributes, values));
+            commands.Add(SqlSyntaxFormattingService.GetInsertCommand(tableName, trackedTableAttributes, values));
+
+            commands.Add(SqlSyntaxFormattingService.GetDeleteCommand($"{tableName}Changes", changeTrackingAttributes, values));
+
             Log.Information("INSERT operation tracked.");
         }
 
-        private void ProcessDeleteCommand(string tableName, List<string> attributes, List<string> values, List<string> commands)
+        private void ProcessDeleteCommand(string tableName, List<string> changeTrackingAttributes, List<string> trackedTableAttributes, List<string> values, List<string> commands)
         {
-            commands.Add(SqlSyntaxFormattingService.GetDeleteCommand(tableName, attributes, values));
+            commands.Add(SqlSyntaxFormattingService.GetDeleteCommand(tableName, trackedTableAttributes, values));
+
+            commands.Add(SqlSyntaxFormattingService.GetDeleteCommand($"{tableName}Changes", changeTrackingAttributes, values));
+
             Log.Information("DELETE operation tracked.");
         }
 
-        private void ProcessUpdateCommand(string tableName, List<string> attributes, List<string> values, List<string> commands, List<string> oldValues)
+        private void ProcessUpdateCommand(string tableName, List<string> changeTrackingAttributes, List<string> trackedTableAttributes, List<string> values, List<string> commands, List<string> oldValues)
         {
             if (oldValues.Count == 0 || oldValues.ElementAt(oldValues.Count - 1).ElementAt(0) != 'O')
             {
@@ -92,9 +86,12 @@ namespace SQLReplicator.Services.CommandPreparationServices
                 return;
             }
 
-            oldValues.RemoveAt(oldValues.Count - 1);
-            commands.Add(SqlSyntaxFormattingService.GetUpdateCommand(tableName, attributes, values, oldValues));
+            commands.Add(SqlSyntaxFormattingService.GetUpdateCommand(tableName, trackedTableAttributes, values, oldValues));
+
+            commands.Add(SqlSyntaxFormattingService.GetDeleteCommand($"{tableName}Changes", changeTrackingAttributes, values));
+            commands.Add(SqlSyntaxFormattingService.GetDeleteCommand($"{tableName}Changes", changeTrackingAttributes, oldValues));
+
             Log.Information("UPDATE operation tracked.");
-        }
+        }    
     }
 }
