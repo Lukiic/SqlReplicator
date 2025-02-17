@@ -17,7 +17,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
             List<string> trackedTableAttributes = changeTrackingAttributes.GetRange(0, changeTrackingAttributes.Count - 1); // Tracked table doesn't have 'Operation' column, so it's removed
 
             int numOfRows = listOfValues.Count;
-            Log.Information($"There are {numOfRows} new rows on {tableName} Change Tracking table.");
+            Log.Information($"There are {numOfRows} new rows in {tableName} Change Tracking table.");
 
             for (int i = 0; i < numOfRows; ++i)    // Reading all rows of change tracking table
             {

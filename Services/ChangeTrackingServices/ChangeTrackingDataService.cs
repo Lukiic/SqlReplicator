@@ -37,7 +37,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 
         public IDataReaderWrapper LoadData(string tableName)
         {
-            string query = $"SELECT * FROM {tableName}Changes";
+            string query = $"SELECT * FROM {tableName}Changes ORDER BY ChangeID ASC";   // SELECT without ORDER BY may not give us proper order
 
             return _executeSqlQueryService.ExecuteQuery(query);
         }
