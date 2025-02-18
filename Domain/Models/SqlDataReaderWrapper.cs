@@ -27,7 +27,7 @@ namespace SQLReplicator.Domain.Models
         {
             List<string> attributes = new List<string>();
 
-            for (int i = 0; i < _reader.FieldCount - 1; ++i)    // Ignoring last column 'IDENTITY ChangeID' that is only used for sorting table
+            for (int i = 0; i < _reader.FieldCount; ++i)
             {
                 attributes.Add(_reader.GetName(i));
             }
@@ -43,7 +43,7 @@ namespace SQLReplicator.Domain.Models
             {
                 List<string> row = new List<string>();
 
-                for (int i = 0; i < _reader.FieldCount - 1; ++i)
+                for (int i = 0; i < _reader.FieldCount; ++i)
                 {
                     if (_reader.IsDBNull(i))
                     {

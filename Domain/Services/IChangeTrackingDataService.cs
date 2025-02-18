@@ -10,8 +10,6 @@ namespace SQLReplicator.Domain.Services
 {
     public interface IChangeTrackingDataService
     {
-        public IDataReaderWrapper LoadData(string tableName);
-
-        public void DeleteData(string tableName);
+        public IDataReaderWrapper LoadData(string tableName, string lastChangeID);
     }
 }

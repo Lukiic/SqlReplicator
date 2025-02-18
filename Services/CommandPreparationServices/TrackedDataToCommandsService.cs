@@ -20,26 +20,32 @@ namespace SQLReplicator.Services.CommandPreparationServices
             _sqlCommandsGenerationService = sqlCommandsGenerationService;
         }
 
-        public List<string> GetCommands(string tableName)
+        public (List<string>, string) GetCommandsAndLastChangeID(string tableName, string lastChangeID)
         {
             IDataReaderWrapper dataReader;
             try
             {
-                dataReader = _changeTrackingDataService.LoadData(tableName);
+                dataReader = _changeTrackingDataService.LoadData(tableName, lastChangeID);
             }
             catch (Exception)
             {
                 Log.Warning($"Failed to load data from {tableName}Changes table");
-                return new List<string>();
+                return (new List<string>(), lastChangeID);
             }
 
             List<string> attributes = dataReader.ReadAttributes();
             List<List<string>> listOfValues = dataReader.ReadValues();  // Inner list represents one row of Change Tracking table
 
             dataReader.Dispose();
-            _changeTrackingDataService.DeleteData(tableName);   // Data has been loaded, so it is now deleted from table
 
-            return _sqlCommandsGenerationService.GetCommands(tableName, attributes, listOfValues);
+            List<string> commands = _sqlCommandsGenerationService.GetCommands(tableName, attributes, listOfValues);
+
+            if (listOfValues.Count != 0)
+            {
+                lastChangeID = listOfValues.Last().Last();   // Last column of last row -> last ChangeID that is processed
+            }
+
+            return (commands, lastChangeID);
         }
     }
 }

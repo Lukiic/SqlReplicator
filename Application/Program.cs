@@ -30,16 +30,17 @@ namespace SQLReplicator.Application
             #region ValidatingFileData
             List<string> dataFromFile = FileImportService.LoadData(filePath);
 
-            if (dataFromFile.Count != 3)
+            if (dataFromFile.Count != 4)
             {
                 Log.Error("File doesn't include necessary data.");
-                Console.WriteLine("Expected: Source server connection string, destination server connection string, Table name");
+                Console.WriteLine("Expected: Source server connection string, destination server connection string, Table name, ID of last change (default 0)");
                 return;
             }
 
             string srcConnectionString = dataFromFile[0];
             string destConnectionString = dataFromFile[1];
             string tableName = dataFromFile[2];
+            string lastChangeID = dataFromFile[3];
             #endregion
 
             #region ConnectingToServers
@@ -94,11 +95,12 @@ namespace SQLReplicator.Application
             #endregion
 
             #region GettingDmlCommandsToBeExecuted
-            IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeCommandsSrc, executeQueriesSrc);
+            IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeQueriesSrc);
             ISqlCommandsGenerationService sqlCommandsGeneration = new SqlCommandsGenerationService();
             ITrackedDataToCommandsService trackedDataToCommands = new TrackedDataToCommandsService(changeTrackingDataService, sqlCommandsGeneration);
 
-            List<string> commandsForDestServer = trackedDataToCommands.GetCommands(tableName);
+            List<string> commandsForDestServer;
+            (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, lastChangeID);
             #endregion
 
             #region ExecutingCommandsOnDestinationServer
@@ -111,6 +113,11 @@ namespace SQLReplicator.Application
             Log.Information("Connection to source server is closed.");
             destConnection.Close();
             Log.Information("Connection to destination server is closed.");
+            #endregion
+
+            #region SavingDataToFile
+            dataFromFile[3] = lastChangeID;     // Updating last change ID in every application run
+            FileExportService.SaveToFile(filePath, dataFromFile);
             #endregion
 
             Log.Information("Application has finished replication.");

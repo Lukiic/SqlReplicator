@@ -11,9 +11,10 @@ namespace SQLReplicator.Services.CommandPreparationServices
 {
     public class SqlCommandsGenerationService : ISqlCommandsGenerationService
     {
-        public List<string> GetCommands(string tableName, List<string> changeTrackingAttributes, List<List<string>> listOfValues)
+        public List<string> GetCommands(string tableName, List<string> attributes, List<List<string>> listOfValues)
         {
             List<string> commands = new List<string>();
+            List<string> changeTrackingAttributes = attributes.GetRange(0, attributes.Count - 1);   // Ignoring 'ChangeID' column
             List<string> trackedTableAttributes = changeTrackingAttributes.GetRange(0, changeTrackingAttributes.Count - 1); // Tracked table doesn't have 'Operation' column, so it's removed
 
             int numOfRows = listOfValues.Count;
@@ -22,7 +23,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
             for (int i = 0; i < numOfRows; ++i)    // Reading all rows of change tracking table
             {
                 List<string> values = listOfValues[i];
-                char operation = values.ElementAt(values.Count - 1).ElementAt(0);
+                char operation = GetOperation(values);
 
                 switch(operation)
                 {
@@ -80,7 +81,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
 
         private void ProcessUpdateCommand(string tableName, List<string> changeTrackingAttributes, List<string> trackedTableAttributes, List<string> values, List<string> commands, List<string> oldValues)
         {
-            if (oldValues.Count == 0 || oldValues.ElementAt(oldValues.Count - 1).ElementAt(0) != 'O')
+            if (oldValues.Count == 0 || GetOperation(oldValues) != 'O')
             {
                 Log.Warning("Unexpected behaviour with UPDATE operation in Change Tracking table.");
                 return;
@@ -92,6 +93,11 @@ namespace SQLReplicator.Services.CommandPreparationServices
             commands.Add(SqlSyntaxFormattingService.GetDeleteCommand($"{tableName}Changes", changeTrackingAttributes, oldValues));
 
             Log.Information("UPDATE operation tracked.");
-        }    
+        }
+        
+        private char GetOperation(List<string> values)
+        {
+            return values.ElementAt(values.Count - 2).ElementAt(0);     // Last value - ChangeID ; Second to last - Operation
+        }
     }
 }

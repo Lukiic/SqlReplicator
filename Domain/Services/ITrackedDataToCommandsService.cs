@@ -8,6 +8,6 @@ namespace SQLReplicator.Domain.Services
 {
     public interface ITrackedDataToCommandsService
     {
-        public List<string> GetCommands(string tableName);
+        public (List<string>, string) GetCommandsAndLastChangeID(string tableName, string lastChangeID);
     }
 }
