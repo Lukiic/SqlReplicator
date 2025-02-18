@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SQLReplicator.Services.CommandPreparationServices
+﻿namespace SQLReplicator.Services.CommandPreparationServices
 {
     public class SqlSyntaxFormattingService
     {
@@ -26,7 +20,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
 
             string setFormat = string.Join(", ", attributes.Zip(newValues, (a, v) => $"{a} = '{v}'"));
             string conditionFormat = string.Join(" AND ", attributes.Zip(oldValues, (a, v) => $"{a} = '{v}'"));
-            
+
             return $"UPDATE {tableName} SET {setFormat} WHERE {conditionFormat};";
         }
 

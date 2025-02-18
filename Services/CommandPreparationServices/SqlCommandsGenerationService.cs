@@ -1,11 +1,5 @@
 ﻿using Serilog;
-using SQLReplicator.Domain.Interfaces;
 using SQLReplicator.Domain.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLReplicator.Services.CommandPreparationServices
 {
@@ -25,7 +19,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
                 List<string> values = listOfValues[i];
                 char operation = GetOperation(values);
 
-                switch(operation)
+                switch (operation)
                 {
                     case 'I':   // INSERT operation
                         ProcessInsertCommand(tableName, changeTrackingAttributes, trackedTableAttributes, values, commands);
@@ -36,7 +30,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
                         break;
 
                     case 'U':   // Update operation -> Always 2 rows in Change Tracking table. One with new, and other with old values
-                        if (i+1 >= numOfRows)
+                        if (i + 1 >= numOfRows)
                         {
                             Log.Warning("Unexpected behaviour with UPDATE operation in Change Tracking table.");
                             break;
@@ -53,6 +47,11 @@ namespace SQLReplicator.Services.CommandPreparationServices
                 }
             }
 
+            if (numOfRows > 0)
+            {
+                Log.Information($"Data from {tableName} Change Tracking table successfully imported.");
+            }
+
             return commands;
         }
 
@@ -66,8 +65,6 @@ namespace SQLReplicator.Services.CommandPreparationServices
             commands.Add(SqlSyntaxFormattingService.GetInsertCommand(tableName, trackedTableAttributes, values));
 
             commands.Add(SqlSyntaxFormattingService.GetDeleteCommand($"{tableName}Changes", changeTrackingAttributes, values));
-
-            Log.Information("INSERT operation tracked.");
         }
 
         private void ProcessDeleteCommand(string tableName, List<string> changeTrackingAttributes, List<string> trackedTableAttributes, List<string> values, List<string> commands)
@@ -75,8 +72,6 @@ namespace SQLReplicator.Services.CommandPreparationServices
             commands.Add(SqlSyntaxFormattingService.GetDeleteCommand(tableName, trackedTableAttributes, values));
 
             commands.Add(SqlSyntaxFormattingService.GetDeleteCommand($"{tableName}Changes", changeTrackingAttributes, values));
-
-            Log.Information("DELETE operation tracked.");
         }
 
         private void ProcessUpdateCommand(string tableName, List<string> changeTrackingAttributes, List<string> trackedTableAttributes, List<string> values, List<string> commands, List<string> oldValues)
@@ -91,10 +86,8 @@ namespace SQLReplicator.Services.CommandPreparationServices
 
             commands.Add(SqlSyntaxFormattingService.GetDeleteCommand($"{tableName}Changes", changeTrackingAttributes, values));
             commands.Add(SqlSyntaxFormattingService.GetDeleteCommand($"{tableName}Changes", changeTrackingAttributes, oldValues));
-
-            Log.Information("UPDATE operation tracked.");
         }
-        
+
         private char GetOperation(List<string> values)
         {
             return values.ElementAt(values.Count - 2).ElementAt(0);     // Last value - ChangeID ; Second to last - Operation

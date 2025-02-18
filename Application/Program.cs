@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using Serilog;
-using SQLReplicator.Domain.Interfaces;
 using SQLReplicator.Domain.Services;
 using SQLReplicator.Services.ChangeTrackingServices;
 using SQLReplicator.Services.CommandExecutionServices;
@@ -87,7 +86,7 @@ namespace SQLReplicator.Application
                 return;
             }
 
-            if(!createTriggerService.CreateTrigger(tableName))
+            if (!createTriggerService.CreateTrigger(tableName))
             {
                 Log.Error($"Error while creating trigger on source server - {tableName} table.");
                 return;

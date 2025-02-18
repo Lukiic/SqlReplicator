@@ -2,11 +2,6 @@
 using SQLReplicator.Domain.Interfaces;
 using SQLReplicator.Domain.Models;
 using SQLReplicator.Domain.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLReplicator.Services.CommandExecutionServices
 {
@@ -24,9 +19,7 @@ namespace SQLReplicator.Services.CommandExecutionServices
             SqlCommand sqlCommand = new SqlCommand(query, _connection);
             SqlDataReader reader = sqlCommand.ExecuteReader();
 
-            SqlDataReaderWrapper dataReader = new SqlDataReaderWrapper(reader);
-
-            return dataReader;
+            return new SqlDataReaderWrapper(reader);
         }
     }
 }

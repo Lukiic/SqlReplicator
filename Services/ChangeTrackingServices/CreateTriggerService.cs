@@ -1,20 +1,14 @@
-﻿using Serilog;
-using SQLReplicator.Domain.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SQLReplicator.Domain.Services;
 
 namespace SQLReplicator.Services.ChangeTrackingServices
 {
     public class CreateTriggerService : ICreateTriggerService
     {
-        private IExecuteSqlCommandService executeSqlCommandService;
+        private IExecuteSqlCommandService _executeSqlCommandService;
 
         public CreateTriggerService(IExecuteSqlCommandService executeSqlCommandService)
         {
-            this.executeSqlCommandService = executeSqlCommandService;
+            _executeSqlCommandService = executeSqlCommandService;
         }
 
         public bool CreateTrigger(string tableName)
@@ -61,7 +55,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
             bool isCreated = true;
             try
             {
-                executeSqlCommandService.ExecuteCommand(command);
+                _executeSqlCommandService.ExecuteCommand(command);
             }
             catch (Exception)
             {

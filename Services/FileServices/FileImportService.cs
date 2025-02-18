@@ -1,28 +1,21 @@
-﻿using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SQLReplicator.Services.FileServices
+﻿namespace SQLReplicator.Services.FileServices
 {
     public class FileImportService
     {
         public static List<string> LoadData(string path)
         {
-			List<string> importedLines;
+            List<string> importedLines;
 
-			try
-			{
+            try
+            {
                 importedLines = File.ReadAllLines(path).ToList();
-			}
-			catch (Exception)
-			{
-                importedLines = new List<string>();	
-			}
+            }
+            catch (Exception)
+            {
+                importedLines = new List<string>();
+            }
 
-			return importedLines;
+            return importedLines;
         }
     }
 }

@@ -1,10 +1,5 @@
 ﻿using Serilog;
 using SQLReplicator.Domain.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLReplicator.Services.CommandExecutionServices
 {
@@ -19,6 +14,12 @@ namespace SQLReplicator.Services.CommandExecutionServices
 
         public void ExecuteCommands(List<string> commands)
         {
+            if (commands.Count == 0)
+            {
+                return;
+            }
+
+            Log.Information($"Execution of {commands.Count} commands started.");
             int i = 0;
 
             foreach (string command in commands)
@@ -26,13 +27,19 @@ namespace SQLReplicator.Services.CommandExecutionServices
                 try
                 {
                     _executeSqlCommandService.ExecuteCommand(command);
-                    Log.Information($"Executed command number: {++i}");
+
+                    if (++i % 1000 == 0)
+                    {
+                        Log.Information($"Executed command number: {i}");
+                    }
                 }
                 catch (Exception)
                 {
                     Log.Warning($"Failed to execute command: {command}");
                 }
             }
+
+            Log.Information("Commands successfully executed.");
         }
     }
 }
