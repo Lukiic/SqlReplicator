@@ -6,6 +6,7 @@ using SQLReplicator.Services.CommandExecutionServices;
 using SQLReplicator.Services.CommandPreparationServices;
 using SQLReplicator.Services.FileServices;
 using SQLReplicator.Services.LoggerServices;
+using SQLReplicator.Services.TrackedTableServices;
 
 namespace SQLReplicator.Application
 {
@@ -74,6 +75,11 @@ namespace SQLReplicator.Application
             IExecuteSqlQueryService executeQueriesSrc = new ExecuteSqlQueryService(srcConnection);
             IExecuteSqlCommandService executeCommandsSrc = new ExecuteSqlCommandService(srcConnection);
             IExecuteSqlCommandService executeCommandsDest = new ExecuteSqlCommandService(destConnection);
+            #endregion
+
+            #region ReadingKeyAttributesOfInputTable
+            IPrimaryKeyAttributesService primaryKeyAttributesService = new PrimaryKeyAttributesService(executeQueriesSrc);
+            List<string> primaryKeyAttributes = primaryKeyAttributesService.GetPrimaryKeyAttributes(tableName);
             #endregion
 
             #region SettingUpSourceServerForTrackingChanges
