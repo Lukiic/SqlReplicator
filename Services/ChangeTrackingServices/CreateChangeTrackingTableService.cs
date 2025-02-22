@@ -21,7 +21,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
                 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}Changes')
                 BEGIN
                     SELECT TOP 0 {string.Join(',', keyAttributes)} INTO {tableName}Changes FROM {tableName}
-                    ALTER TABLE {tableName}Changes ADD Operation CHAR(1), ChangeID BIGINT IDENTITY(1,1);
+                    ALTER TABLE {tableName}Changes ADD Operation CHAR(1), ChangeID BIGINT IDENTITY(1,1), IsReplicated1 BIT, IsReplicated2 BIT;
                 END;";
 
             bool isCreated = true;

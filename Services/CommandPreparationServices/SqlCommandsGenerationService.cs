@@ -6,9 +6,9 @@ namespace SQLReplicator.Services.CommandPreparationServices
     public class SqlCommandsGenerationService : ISqlCommandsGenerationService
     {
         /*
-            Values: ID1, ID2, ..., IDn, Operation, ChangeID, Attr1, Attr2, AttrM
-                    -----------------------------            -------------------
-                    ChangeTracking table values              Tracked table values
+            Values: ID1, ID2, ..., IDn, Operation, ChangeID, IsReplicated1, IsReplicated2, Attr1, Attr2, AttrM
+                    -----------------------------                                          -------------------
+                    ChangeTracking table values                                            Tracked table values
         */
         /*
             Processing Change Tracking table data:
@@ -30,7 +30,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
                 switch (operation)
                 {
                     case 'I':   // INSERT operation
-                        List<string> trackedTableValues = values.Skip(changeTrackingAttrs.Count + 1).ToList();
+                        List<string> trackedTableValues = values.Skip(changeTrackingAttrs.Count + 3).ToList();
 
                         ProcessInsertCommand(tableName, trackedTableAttrs, trackedTableValues, commands);
                         ProcessDeleteCommand($"{tableName}Changes", changeTrackingAttrs, values, commands);

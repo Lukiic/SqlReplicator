@@ -11,13 +11,13 @@ namespace SQLReplicator.Services.ChangeTrackingServices
         {
             _executeSqlQueryService = executeSqlQueryService;
         }
-        public IDataReaderWrapper LoadData(string tableName, string lastChangeID, List<string> keyAttributes)
+        public IDataReaderWrapper LoadData(string tableName, string replicatedBitNum, List<string> keyAttributes)
         {
             string keysFormat = string.Join(" AND ", keyAttributes.Zip(keyAttributes, (k1, k2) => $"{tableName}Changes.{k1} = {tableName}.{k2}"));
 
             string query = @$"SELECT *
                            FROM {tableName}Changes LEFT OUTER JOIN {tableName} ON {keysFormat}
-                           WHERE ChangeID > {lastChangeID}
+                           WHERE IsReplicated{replicatedBitNum} = 0
                            ORDER BY ChangeID ASC";   // SELECT without ORDER BY may not give us proper order
 
             return _executeSqlQueryService.ExecuteQuery(query);

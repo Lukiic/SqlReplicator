@@ -2,6 +2,6 @@
 {
     public interface ITrackedDataToCommandsService
     {
-        public (List<string>, string) GetCommandsAndLastChangeID(string tableName, string lastChangeID, List<string> keyAttributes);
+        public (List<string>, string) GetCommandsAndLastChangeID(string tableName, string replicatedBitNum, List<string> keyAttributes);
     }
 }

@@ -26,7 +26,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 											IF EXISTS (SELECT * FROM inserted) AND NOT EXISTS (SELECT * FROM deleted)
 											BEGIN
 												INSERT INTO {tableName}Changes
-												SELECT {keyAttributesCSV}, ''I''
+												SELECT {keyAttributesCSV}, ''I'', 0, 0						-- IsReplicated bits - default 0
 												FROM inserted;
 											END
 
@@ -34,11 +34,11 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 											IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
 											BEGIN
 												INSERT INTO {tableName}Changes
-												SELECT {keyAttributesCSV}, ''D''						-- Deleting old values
+												SELECT {keyAttributesCSV}, ''D'', 0, 0						-- Deleting old values
 												FROM deleted;
 
 												INSERT INTO {tableName}Changes
-												SELECT {keyAttributesCSV}, ''I''						-- Inserting new (updated) values
+												SELECT {keyAttributesCSV}, ''I'', 0, 0						-- Inserting new (updated) values
 												FROM inserted;
 											END
 
@@ -46,7 +46,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 											IF EXISTS (SELECT * FROM deleted) AND NOT EXISTS (SELECT * FROM inserted)
 											BEGIN
 												INSERT INTO {tableName}Changes
-												SELECT {keyAttributesCSV}, ''D''
+												SELECT {keyAttributesCSV}, ''D'', 0, 0
 												FROM deleted;
 											END
 										END

@@ -33,14 +33,14 @@ namespace SQLReplicator.Application
             if (dataFromFile.Count != 4)
             {
                 Log.Error("File doesn't include necessary data.");
-                Console.WriteLine("Expected: Source server connection string, destination server connection string, Table name, ID of last change (default 0)");
+                Console.WriteLine("Expected: Source server connection string, destination server connection string, Table name, ID number of this app instance (which replicated bit belongs to this instance)");
                 return;
             }
 
             string srcConnectionString = dataFromFile[0];
             string destConnectionString = dataFromFile[1];
             string tableName = dataFromFile[2];
-            string lastChangeID = dataFromFile[3];
+            string replicatedBitNum = dataFromFile[3];
             #endregion
 
             #region ConnectingToServers
@@ -106,10 +106,8 @@ namespace SQLReplicator.Application
             ITrackedDataToCommandsService trackedDataToCommands = new TrackedDataToCommandsService(changeTrackingDataService, sqlCommandsGeneration);
 
             List<string> commandsForDestServer;
-            (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, lastChangeID, keyAttributes);
-
-            /*foreach(string command in commandsForDestServer)
-                Console.WriteLine(command);*/
+            string lastChangeID;
+            (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, replicatedBitNum, keyAttributes);
             #endregion
 
             #region ExecutingCommandsOnDestinationServer
@@ -117,16 +115,20 @@ namespace SQLReplicator.Application
             executeListOfCommands.ExecuteCommands(commandsForDestServer);
             #endregion
 
+            #region UpdatingReplicatedBitOfChangeTrackingTable
+            IUpdateChangeTrackingTableService updateChangeTrackingTable = new UpdateChangeTrackingTableService(executeCommandsSrc);
+
+            if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, lastChangeID, replicatedBitNum))
+            {
+                Log.Warning($"Error while updating change tracking table on source server, IsReplicated bit is not updated");
+            }
+            #endregion
+
             #region ClosingServerConnections
             srcConnection.Close();
             Log.Information("Connection to source server is closed.");
             destConnection.Close();
             Log.Information("Connection to destination server is closed.");
-            #endregion
-
-            #region SavingDataToFile
-            dataFromFile[3] = lastChangeID;     // Updating last change ID in every application run
-            FileExportService.SaveToFile(filePath, dataFromFile);
             #endregion
 
             Log.Information("Application has finished replication.");
