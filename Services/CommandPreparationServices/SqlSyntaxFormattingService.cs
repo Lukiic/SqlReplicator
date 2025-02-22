@@ -13,17 +13,6 @@
             return $"INSERT INTO {tableName} ({attributesFormat}) VALUES ({valuesFormat});";
         }
 
-        public static string GetUpdateCommand(string tableName, List<string> attributes, List<string> newValues, List<string> oldValues)
-        {
-            newValues = RemoveExtraValues(attributes, newValues);
-            oldValues = RemoveExtraValues(attributes, oldValues);
-
-            string setFormat = string.Join(", ", attributes.Zip(newValues, (a, v) => $"{a} = '{v}'"));
-            string conditionFormat = string.Join(" AND ", attributes.Zip(oldValues, (a, v) => $"{a} = '{v}'"));
-
-            return $"UPDATE {tableName} SET {setFormat} WHERE {conditionFormat};";
-        }
-
         public static string GetDeleteCommand(string tableName, List<string> attributes, List<string> values)
         {
             values = RemoveExtraValues(attributes, values);

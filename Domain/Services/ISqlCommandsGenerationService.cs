@@ -2,6 +2,6 @@
 {
     public interface ISqlCommandsGenerationService
     {
-        public List<string> GetCommands(string tableName, List<string> attributes, List<List<string>> listOfValues);
+        public List<string> GetCommands(string tableName, List<string> changeTrackingAttrs, List<string> trackedTableAttrs, List<string> keyAttributes, List<List<string>> listOfValues);
     }
 }

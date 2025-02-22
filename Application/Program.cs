@@ -106,7 +106,10 @@ namespace SQLReplicator.Application
             ITrackedDataToCommandsService trackedDataToCommands = new TrackedDataToCommandsService(changeTrackingDataService, sqlCommandsGeneration);
 
             List<string> commandsForDestServer;
-            (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, lastChangeID);
+            (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, lastChangeID, keyAttributes);
+
+            /*foreach(string command in commandsForDestServer)
+                Console.WriteLine(command);*/
             #endregion
 
             #region ExecutingCommandsOnDestinationServer
