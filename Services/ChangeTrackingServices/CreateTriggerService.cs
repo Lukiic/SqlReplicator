@@ -11,8 +11,9 @@ namespace SQLReplicator.Services.ChangeTrackingServices
             _executeSqlCommandService = executeSqlCommandService;
         }
 
-        public bool CreateTrigger(string tableName)
+        public bool CreateTrigger(string tableName, List<string> keyAttributes)
         {
+			string keyAttributesCSV = string.Join(',', keyAttributes);
             string command = $@"IF NOT EXISTS (SELECT * FROM sys.triggers WHERE name = 'TrackChanges{tableName}')
 								BEGIN
 									EXEC('
@@ -25,7 +26,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 											IF EXISTS (SELECT * FROM inserted) AND NOT EXISTS (SELECT * FROM deleted)
 											BEGIN
 												INSERT INTO {tableName}Changes
-												SELECT *, ''I''
+												SELECT {keyAttributesCSV}, ''I''
 												FROM inserted;
 											END
 
@@ -33,19 +34,19 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 											IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
 											BEGIN
 												INSERT INTO {tableName}Changes
-												SELECT *, ''U''						-- U -> New updated values
-												FROM inserted;
+												SELECT {keyAttributesCSV}, ''D''						-- Deleting old values
+												FROM deleted;
 
 												INSERT INTO {tableName}Changes
-												SELECT *, ''O''						-- O -> Old values (before update)
-												FROM deleted;
+												SELECT {keyAttributesCSV}, ''I''						-- Inserting new (updated) values
+												FROM inserted;
 											END
 
 											-- DELETE operation
 											IF EXISTS (SELECT * FROM deleted) AND NOT EXISTS (SELECT * FROM inserted)
 											BEGIN
 												INSERT INTO {tableName}Changes
-												SELECT *, ''D''
+												SELECT {keyAttributesCSV}, ''D''
 												FROM deleted;
 											END
 										END

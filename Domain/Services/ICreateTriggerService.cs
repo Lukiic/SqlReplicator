@@ -2,6 +2,6 @@
 {
     public interface ICreateTriggerService
     {
-        public bool CreateTrigger(string tableName);
+        public bool CreateTrigger(string tableName, List<string> keyAttributes);
     }
 }

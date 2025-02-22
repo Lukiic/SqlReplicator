@@ -93,7 +93,7 @@ namespace SQLReplicator.Application
                 return;
             }
 
-            if (!createTriggerService.CreateTrigger(tableName))
+            if (!createTriggerService.CreateTrigger(tableName, keyAttributes))
             {
                 Log.Error($"Error while creating trigger on source server - {tableName} table.");
                 return;
