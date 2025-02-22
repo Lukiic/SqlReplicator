@@ -80,6 +80,7 @@ namespace SQLReplicator.Application
             #region ReadingKeyAttributesOfInputTable
             IPrimaryKeyAttributesService primaryKeyAttributesService = new PrimaryKeyAttributesService(executeQueriesSrc);
             List<string> primaryKeyAttributes = primaryKeyAttributesService.GetPrimaryKeyAttributes(tableName);
+            int keyAttributesCount = primaryKeyAttributes.Count;
             #endregion
 
             #region SettingUpSourceServerForTrackingChanges
