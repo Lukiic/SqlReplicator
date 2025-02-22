@@ -79,15 +79,15 @@ namespace SQLReplicator.Application
 
             #region ReadingKeyAttributesOfInputTable
             IPrimaryKeyAttributesService primaryKeyAttributesService = new PrimaryKeyAttributesService(executeQueriesSrc);
-            List<string> primaryKeyAttributes = primaryKeyAttributesService.GetPrimaryKeyAttributes(tableName);
-            int keyAttributesCount = primaryKeyAttributes.Count;
+            List<string> keyAttributes = primaryKeyAttributesService.GetPrimaryKeyAttributes(tableName);
+            int keyAttributesCount = keyAttributes.Count;
             #endregion
 
             #region SettingUpSourceServerForTrackingChanges
             ICreateChangeTrackingTableService createTableService = new CreateChangeTrackingTableService(executeCommandsSrc);
             ICreateTriggerService createTriggerService = new CreateTriggerService(executeCommandsSrc);
 
-            if (!createTableService.CreateCTTable(tableName))
+            if (!createTableService.CreateCTTable(tableName, keyAttributes))
             {
                 Log.Error($"Error while creating change tracking table on source server - {tableName} table.");
                 return;

@@ -2,6 +2,6 @@
 {
     public interface ICreateChangeTrackingTableService
     {
-        public bool CreateCTTable(string tableName);
+        public bool CreateCTTable(string tableName, List<string> keyAttributes);
     }
 }
