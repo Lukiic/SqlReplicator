@@ -19,7 +19,7 @@ namespace SQLReplicator.Services.CommandExecutionServices
                 return;
             }
 
-            Log.Information($"Execution of {commands.Count} commands started.");
+            Log.Information($"Execution of {commands.Count} SQL commands started.");
             int i = 0;
 
             foreach (string command in commands)
@@ -30,16 +30,16 @@ namespace SQLReplicator.Services.CommandExecutionServices
 
                     if (++i % 1000 == 0)
                     {
-                        Log.Information($"Executed command number: {i}");
+                        Log.Debug($"Executed {i} commands out of {commands.Count} so far.");
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Log.Warning($"Failed to execute command: {command}");
+                    Log.Warning(ex, $"Failed to execute command: {command}");
                 }
             }
 
-            Log.Information("Commands successfully executed.");
+            Log.Information($"Successfully executed {i} out of {commands.Count} commands.");
         }
     }
 }

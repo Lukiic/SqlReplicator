@@ -27,7 +27,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
             }
             catch (Exception)
             {
-                Log.Warning($"Failed to load data from {tableName}Changes table");
+                Log.Warning("Unable to read data from the Change Tracking table.");
                 return (new List<string>(), lastChangeID);
             }
 

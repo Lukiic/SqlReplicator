@@ -16,13 +16,12 @@ namespace SQLReplicator.Application
         static void Main(string[] args)
         {
             LoggerService.InitializeLogger();
-            Log.Information("Application has started.");
+            Log.Information("Application is starting.");
 
             #region ValidatingApplicationArguments
-            if (args.Length != 1)
+            if (args.Length == 0 || string.IsNullOrWhiteSpace(args[0]))
             {
-                Log.Error("Wrong number of application arguments.");
-                Console.WriteLine("Expected: filePath");
+                Log.Fatal("Application cannot start: Missing required argument for file path.");
                 return;
             }
             string filePath = args[0];
@@ -33,8 +32,7 @@ namespace SQLReplicator.Application
 
             if (dataFromFile.Count != 4)
             {
-                Log.Error("File doesn't include necessary data.");
-                Console.WriteLine("Expected: Source server connection string, destination server connection string, Table name, ID number of this app instance (which replicated bit belongs to this instance)");
+                Log.Fatal("Application cannot start: Missing or invalid configuration data in the file. Expected fields: Source server connection string, Destination server connection string, Table name, Instance ID (number of replicated bit).");
                 return;
             }
 
@@ -49,12 +47,11 @@ namespace SQLReplicator.Application
             try
             {
                 srcConnection.Open();
-                Log.Information("Connection to source server is opened.");
+                Log.Information("Successfully established a connection to the source server.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Log.Error("Connection to source server can't be opened.");
+                Log.Fatal("Application cannot start: Failed to establish a connection to the source server.");
                 return;
             }
 
@@ -62,12 +59,12 @@ namespace SQLReplicator.Application
             try
             {
                 destConnection.Open();
-                Log.Information("Connection to destination server is opened.");
+                Log.Information("Successfully established a connection to the destination server.");
             }
             catch (Exception)
             {
                 srcConnection.Close();
-                Log.Error("Connection to destination server can't be opened.");
+                Log.Fatal("Application cannot start: Failed to establish a connection to the destination server.");
                 return;
             }
             #endregion
@@ -77,6 +74,7 @@ namespace SQLReplicator.Application
             IExecuteSqlCommandService executeCommandsSrc = new ExecuteSqlCommandService(srcConnection);
             IExecuteSqlCommandService executeCommandsDest = new ExecuteSqlCommandService(destConnection);
 
+            IPrimaryKeyAttributesService primaryKeyAttributesService = new PrimaryKeyAttributesService(executeQueriesSrc);
             IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeQueriesSrc);
             ISqlCommandsGenerationService sqlCommandsGeneration = new SqlCommandsGenerationService();
             ITrackedDataToCommandsService trackedDataToCommands = new TrackedDataToCommandsService(changeTrackingDataService, sqlCommandsGeneration);
@@ -86,7 +84,6 @@ namespace SQLReplicator.Application
             #endregion
 
             #region ReadingKeyAttributesOfInputTable
-            IPrimaryKeyAttributesService primaryKeyAttributesService = new PrimaryKeyAttributesService(executeQueriesSrc);
             List<string> keyAttributes = primaryKeyAttributesService.GetPrimaryKeyAttributes(tableName);
             int keyAttributesCount = keyAttributes.Count;
             #endregion
@@ -97,13 +94,13 @@ namespace SQLReplicator.Application
 
             if (!createTableService.CreateCTTable(tableName, keyAttributes))
             {
-                Log.Error($"Error while creating change tracking table on source server - {tableName} table.");
+                Log.Fatal("Application cannot proceed: Failed to create Change Tracking table.");
                 return;
             }
 
             if (!createTriggerService.CreateTrigger(tableName, keyAttributes))
             {
-                Log.Error($"Error while creating trigger on source server - {tableName} table.");
+                Log.Fatal($"Application cannot proceed: Failed to create Change Tracking trigger.");
                 return;
             }
             #endregion
@@ -124,22 +121,22 @@ namespace SQLReplicator.Application
                 #region UpdatingReplicatedBitOfChangeTrackingTable
                 if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, lastChangeID, replicatedBitNum))
                 {
-                    Log.Warning($"Error while updating change tracking table on source server, IsReplicated bit is not updated");
+                    Log.Warning("Unable to update replicated bit in the Change Tracking table. The same data may be replicated again in the next execution if the issue persists.");
                 }
                 #endregion
 
-                Log.Information("Going to sleep for 10 seconds.");
+                Log.Debug("Sleeping for 10 seconds before the next iteration.");
                 Thread.Sleep(10_000);
             }
 
             #region ClosingServerConnections
             srcConnection.Close();
-            Log.Information("Connection to source server is closed.");
+            Log.Information("Source server connection successfully closed.");
             destConnection.Close();
-            Log.Information("Connection to destination server is closed.");
+            Log.Information("Destination server connection successfully closed.");
             #endregion
 
-            Log.Information("Application has finished replication.");
+            Log.Information("Application has finished executing and is shutting down.");
             LoggerService.CloseLogger();
         }
 
@@ -148,6 +145,7 @@ namespace SQLReplicator.Application
         {
             e.Cancel = true;
             shouldRun = false;
+            Log.Information("Termination signal received. Exiting main loop and preparing for shutdown.");
         }
     }
 }

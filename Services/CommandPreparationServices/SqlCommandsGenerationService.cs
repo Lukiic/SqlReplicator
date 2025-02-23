@@ -20,7 +20,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
             List<string> commands = new List<string>();
 
             int numOfRows = listOfValues.Count;
-            Log.Information($"There are {numOfRows} new rows in {tableName} Change Tracking table.");
+            Log.Information($"{numOfRows} rows read from the Change Tracking table.");
 
             for (int i = 0; i < numOfRows; ++i)    // Reading all rows of change tracking table
             {
@@ -42,14 +42,14 @@ namespace SQLReplicator.Services.CommandPreparationServices
                         break;
 
                     default:
-                        Log.Warning("Unexpected data in Change Tracking table: [" + string.Join(", ", values) + "]");
+                        Log.Warning($"Unexpected value for 'Operation' column in Change Tracking table: {operation}. Row will be ignored");
                         break;
                 }
             }
 
             if (numOfRows > 0)
             {
-                Log.Information($"Data from {tableName} Change Tracking table successfully imported.");
+                Log.Information("Data from the Change Tracking table has been successfully imported.");
             }
 
             // Related commands INSERT/DELETE in tracked table and DELETE from Change Tracking table are joined in one string - because of transaction execution
