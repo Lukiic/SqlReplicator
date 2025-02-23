@@ -52,6 +52,9 @@ namespace SQLReplicator.Services.CommandPreparationServices
                 Log.Information($"Data from {tableName} Change Tracking table successfully imported.");
             }
 
+            // Related commands INSERT/DELETE in tracked table and DELETE from Change Tracking table are joined in one string - because of transaction execution
+            commands = commands.Chunk(2).Select(pair => string.Concat(pair)).ToList();
+
             return commands;
         }
         
