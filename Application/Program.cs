@@ -12,6 +12,7 @@ namespace SQLReplicator.Application
 {
     public class Program
     {
+        private static bool shouldRun = true;
         static void Main(string[] args)
         {
             LoggerService.InitializeLogger();
@@ -75,6 +76,13 @@ namespace SQLReplicator.Application
             IExecuteSqlQueryService executeQueriesSrc = new ExecuteSqlQueryService(srcConnection);
             IExecuteSqlCommandService executeCommandsSrc = new ExecuteSqlCommandService(srcConnection);
             IExecuteSqlCommandService executeCommandsDest = new ExecuteSqlCommandService(destConnection);
+
+            IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeQueriesSrc);
+            ISqlCommandsGenerationService sqlCommandsGeneration = new SqlCommandsGenerationService();
+            ITrackedDataToCommandsService trackedDataToCommands = new TrackedDataToCommandsService(changeTrackingDataService, sqlCommandsGeneration);
+            IExecuteListOfCommandsService executeListOfCommands = new ExecuteListOfCommandsService(executeCommandsDest);
+
+            IUpdateChangeTrackingTableService updateChangeTrackingTable = new UpdateChangeTrackingTableService(executeCommandsSrc);
             #endregion
 
             #region ReadingKeyAttributesOfInputTable
@@ -100,29 +108,29 @@ namespace SQLReplicator.Application
             }
             #endregion
 
-            #region GettingDmlCommandsToBeExecuted
-            IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeQueriesSrc);
-            ISqlCommandsGenerationService sqlCommandsGeneration = new SqlCommandsGenerationService();
-            ITrackedDataToCommandsService trackedDataToCommands = new TrackedDataToCommandsService(changeTrackingDataService, sqlCommandsGeneration);
-
-            List<string> commandsForDestServer;
-            string lastChangeID;
-            (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, replicatedBitNum, keyAttributes);
-            #endregion
-
-            #region ExecutingCommandsOnDestinationServer
-            IExecuteListOfCommandsService executeListOfCommands = new ExecuteListOfCommandsService(executeCommandsDest);
-            executeListOfCommands.ExecuteCommands(commandsForDestServer);
-            #endregion
-
-            #region UpdatingReplicatedBitOfChangeTrackingTable
-            IUpdateChangeTrackingTableService updateChangeTrackingTable = new UpdateChangeTrackingTableService(executeCommandsSrc);
-
-            if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, lastChangeID, replicatedBitNum))
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(CancelKeyPressHandler);
+            while (shouldRun)
             {
-                Log.Warning($"Error while updating change tracking table on source server, IsReplicated bit is not updated");
+                #region GettingDmlCommandsToBeExecuted
+                List<string> commandsForDestServer;
+                string lastChangeID;
+                (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, replicatedBitNum, keyAttributes);
+                #endregion
+
+                #region ExecutingCommandsOnDestinationServer
+                executeListOfCommands.ExecuteCommands(commandsForDestServer);
+                #endregion
+
+                #region UpdatingReplicatedBitOfChangeTrackingTable
+                if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, lastChangeID, replicatedBitNum))
+                {
+                    Log.Warning($"Error while updating change tracking table on source server, IsReplicated bit is not updated");
+                }
+                #endregion
+
+                Log.Information("Going to sleep for 10 seconds.");
+                Thread.Sleep(10_000);
             }
-            #endregion
 
             #region ClosingServerConnections
             srcConnection.Close();
@@ -133,6 +141,13 @@ namespace SQLReplicator.Application
 
             Log.Information("Application has finished replication.");
             LoggerService.CloseLogger();
+        }
+
+        // Handler for CTRL+C action stops the while-true loop
+        private static void CancelKeyPressHandler(object sender, ConsoleCancelEventArgs e)
+        {
+            e.Cancel = true;
+            shouldRun = false;
         }
     }
 }
