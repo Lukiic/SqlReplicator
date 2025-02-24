@@ -8,7 +8,7 @@
 
             string attributesFormat = string.Join(", ", attributes);
 
-            string valuesFormat = string.Join(", ", values.Select(v => string.IsNullOrWhiteSpace(v) ? "NULL" : $"'{v}'"));
+            string valuesFormat = string.Join(", ", values.Select(v => v == null ? "NULL" : $"'{v}'"));
 
             return $"INSERT INTO {tableName} ({attributesFormat}) VALUES ({valuesFormat});";
         }
@@ -17,7 +17,7 @@
         {
             values = RemoveExtraValues(attributes, values);
 
-            IEnumerable<string> attrsAssignValsFormat = attributes.Zip(values, (a, v) => string.IsNullOrWhiteSpace(v) ? $"{a} IS NULL" : $"{a} = '{v}'");
+            IEnumerable<string> attrsAssignValsFormat = attributes.Zip(values, (a, v) => v == null ? $"{a} IS NULL" : $"{a} = '{v}'");
             string conditionFormat = string.Join(" AND ", attrsAssignValsFormat);
 
             return $"DELETE FROM {tableName} WHERE {conditionFormat};";

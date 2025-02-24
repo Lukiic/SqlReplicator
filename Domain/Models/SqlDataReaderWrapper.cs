@@ -30,9 +30,9 @@ namespace SQLReplicator.Domain.Models
             return attributes;
         }
 
-        public List<List<string>> ReadValues()      // Inner list represents one row of table
+        public List<List<string?>> ReadValues()      // Inner list represents one row of table
         {
-            List<List<string>> allValues = new List<List<string>>();
+            List<List<string?>> allValues = new List<List<string?>>();
 
             while (_reader.Read())
             {
@@ -42,7 +42,7 @@ namespace SQLReplicator.Domain.Models
                 {
                     if (_reader.IsDBNull(i))
                     {
-                        row.Add("");
+                        row.Add(null);
                     }
                     else
                     {

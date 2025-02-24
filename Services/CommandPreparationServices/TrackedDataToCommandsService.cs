@@ -34,7 +34,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
             List<string> attributes = dataReader.ReadAttributes();
             // Attributes: ID1, ID2, ..., IDn, Operation, ChangeID, IsReplicated1, IsReplicated2, Attr1, Attr2, AttrM
 
-            List<List<string>> listOfValues = dataReader.ReadValues();  // Inner list represents one row of table with "attributes"
+            List<List<string?>> listOfValues = dataReader.ReadValues();  // Inner list represents one row of table with "attributes"
 
             List<string> changeTrackingAttrs = attributes.Take(keyAttrsCount + 1).ToList();
             // ChangeTracking attributes: ID1, ID2, ..., IDn, Operation     - Without 'ChangeID' and 'IsReplicated' attributes
