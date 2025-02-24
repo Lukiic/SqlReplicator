@@ -51,3 +51,7 @@ Thumbs.db
 /.vs
 /obj
 /bin/Debug/net8.0
+/SQLReplicator/bin/Debug/net8.0
+/SQLReplicator/obj
+/SQLReplicator.Tests/bin/Debug/net8.0
+/SQLReplicator.Tests/obj

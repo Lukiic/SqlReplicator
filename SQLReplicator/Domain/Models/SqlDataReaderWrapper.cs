@@ -1,13 +1,14 @@
 ﻿using Microsoft.Data.SqlClient;
 using SQLReplicator.Domain.Interfaces;
+using System.Data;
 
 namespace SQLReplicator.Domain.Models
 {
     public class SqlDataReaderWrapper : IDataReaderWrapper
     {
-        private SqlDataReader _reader;
+        private IDataReader _reader;
 
-        public SqlDataReaderWrapper(SqlDataReader reader)
+        public SqlDataReaderWrapper(IDataReader reader)
         {
             _reader = reader;
         }
@@ -36,7 +37,7 @@ namespace SQLReplicator.Domain.Models
 
             while (_reader.Read())
             {
-                List<string> row = new List<string>();
+                List<string?> row = new List<string?>();
 
                 for (int i = 0; i < _reader.FieldCount; ++i)
                 {

@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLReplicator", "SQLReplicator.csproj", "{BBA22C7F-B677-499E-8D5B-E528CAE4FB43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLReplicator", "SQLReplicator\SQLReplicator.csproj", "{BBA22C7F-B677-499E-8D5B-E528CAE4FB43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLReplicator.Tests", "SQLReplicator.Tests\SQLReplicator.Tests.csproj", "{C363B014-1C0C-4289-A8C6-BAD947AF905B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{BBA22C7F-B677-499E-8D5B-E528CAE4FB43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBA22C7F-B677-499E-8D5B-E528CAE4FB43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBA22C7F-B677-499E-8D5B-E528CAE4FB43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C363B014-1C0C-4289-A8C6-BAD947AF905B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C363B014-1C0C-4289-A8C6-BAD947AF905B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C363B014-1C0C-4289-A8C6-BAD947AF905B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C363B014-1C0C-4289-A8C6-BAD947AF905B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
