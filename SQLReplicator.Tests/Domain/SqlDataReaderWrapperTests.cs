@@ -14,11 +14,15 @@ namespace SQLReplicator.Tests.Domain
         private SqlDataReaderWrapper _sqlDataReaderWrapper;
         Mock<IDataReader> dataReaderMock;
 
+        public SqlDataReaderWrapperTests()
+        {
+            dataReaderMock = new Mock<IDataReader>();
+        }
+
         [Fact]
         public void Dispose_ShouldCallCloseAndDisposeOnce()
         {
             // Arrange
-            dataReaderMock = new Mock<IDataReader>(MockBehavior.Strict);    // Strict -> no other methods should be called but Close() and Dispose()
             dataReaderMock.Setup(x => x.Close());
             dataReaderMock.Setup(x => x.Dispose());
 
@@ -41,7 +45,6 @@ namespace SQLReplicator.Tests.Domain
         public void ReadAttributes_ReturnsListWithExpectedNumberOfElements(int expected)
         {
             // Arrange
-            dataReaderMock = new Mock<IDataReader>();
             dataReaderMock.Setup(x => x.FieldCount).Returns(expected);
             dataReaderMock.Setup(x => x.GetName(It.IsAny<int>())).Returns("SampleAttribute");
 
@@ -61,7 +64,6 @@ namespace SQLReplicator.Tests.Domain
         public void ReadAttributes_ReturnsListThatContainsExpectedAttributes(int numOfAttributes)
         {
             // Arrange
-            dataReaderMock = new Mock<IDataReader>();
             dataReaderMock.Setup(x => x.FieldCount).Returns(numOfAttributes);
 
             for (int i = 0; i < numOfAttributes; ++i)
@@ -85,7 +87,6 @@ namespace SQLReplicator.Tests.Domain
         public void ReadValues_ReturnsEmptyList()
         {
             // Arrange
-            dataReaderMock = new Mock<IDataReader>();
             dataReaderMock.Setup(x => x.Read()).Returns(false);
             _sqlDataReaderWrapper = new SqlDataReaderWrapper(dataReaderMock.Object);
 
@@ -104,8 +105,6 @@ namespace SQLReplicator.Tests.Domain
         public void ReadValues_ReturnsListWithExpectedNumberOfElements(int expected)
         {
             // Arrange
-            dataReaderMock = new Mock<IDataReader>();
-
             int numOfCalls = 0;
             dataReaderMock.Setup(x => x.Read()).Returns(() => { return ++numOfCalls <= expected; });
 
@@ -131,7 +130,6 @@ namespace SQLReplicator.Tests.Domain
         public void ReadValues_ReturnsListThatContainsNullForNullValues()
         {
             // Arrange
-            dataReaderMock = new Mock<IDataReader>();
             const int innerListCount = 5;
 
             int numOfCalls = 0;
@@ -160,7 +158,6 @@ namespace SQLReplicator.Tests.Domain
         public void ReadValues_ReturnsListThatContainsValidStringsForNonNullValues()
         {
             // Arrange
-            dataReaderMock = new Mock<IDataReader>();
             const int innerListCount = 5;
 
             int numOfCalls = 0;
