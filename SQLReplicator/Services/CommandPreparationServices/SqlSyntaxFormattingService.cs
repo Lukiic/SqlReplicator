@@ -2,7 +2,7 @@
 {
     public class SqlSyntaxFormattingService
     {
-        public static string GetInsertCommand(string tableName, List<string> attributes, List<string> values)
+        public static string GetInsertCommand(string tableName, List<string> attributes, List<string?> values)
         {
             values = RemoveExtraValues(attributes, values);
 
@@ -13,7 +13,7 @@
             return $"INSERT INTO {tableName} ({attributesFormat}) VALUES ({valuesFormat});";
         }
 
-        public static string GetDeleteCommand(string tableName, List<string> attributes, List<string> values)
+        public static string GetDeleteCommand(string tableName, List<string> attributes, List<string?> values)
         {
             values = RemoveExtraValues(attributes, values);
 
@@ -23,7 +23,7 @@
             return $"DELETE FROM {tableName} WHERE {conditionFormat};";
         }
 
-        private static List<string> RemoveExtraValues(List<string> attributes, List<string> values)
+        private static List<string?> RemoveExtraValues(List<string> attributes, List<string?> values)
         {
             if (attributes.Count == values.Count)
             {
