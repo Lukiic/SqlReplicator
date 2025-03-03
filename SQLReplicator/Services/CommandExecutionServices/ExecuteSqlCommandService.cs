@@ -13,13 +13,13 @@ namespace SQLReplicator.Services.CommandExecutionServices
         }
 
         // Input string can have multiple commands, so transaction is used
-        public void ExecuteCommand(string command)
+        public void ExecuteCommand(string commands)
         {
             using (SqlTransaction transaction = _connection.BeginTransaction())
             {
                 try
                 {
-                    SqlCommand sqlCommand = new SqlCommand(command, _connection, transaction);
+                    SqlCommand sqlCommand = new SqlCommand(commands, _connection, transaction);
                     sqlCommand.ExecuteNonQuery();
                     transaction.Commit();
                 }
