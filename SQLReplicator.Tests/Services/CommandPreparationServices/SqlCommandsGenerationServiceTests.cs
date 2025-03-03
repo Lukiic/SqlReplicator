@@ -48,7 +48,7 @@ namespace SQLReplicator.Tests.Services.CommandPreparationServices
         public void GetCommands_EachStringContainsTwoCommands()
         {
             // Arrange
-            string regexPattern = @".+;.+";     // Commmand ; Command
+            string regexPattern = @".+;.+";     // Command ; Command
 
             // Act
             List<string> commands = _sqlCommandsGenerationService.GetCommands(tableName, changeTrackingAttrs, trackedTableAttrs, keyAttributes, listOfValues);
