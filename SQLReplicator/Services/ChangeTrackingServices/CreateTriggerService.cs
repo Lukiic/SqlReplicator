@@ -13,7 +13,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 
         public bool CreateTrigger(string tableName, List<string> keyAttributes)
         {
-			string keyAttributesCSV = string.Join(',', keyAttributes);
+            string keyAttributesCSV = string.Join(',', keyAttributes);
             string command = $@"IF NOT EXISTS (SELECT * FROM sys.triggers WHERE name = 'TrackChanges{tableName}')
 								BEGIN
 									EXEC('

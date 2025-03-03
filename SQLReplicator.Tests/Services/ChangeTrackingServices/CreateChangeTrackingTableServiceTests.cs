@@ -1,11 +1,6 @@
 ﻿using Moq;
 using SQLReplicator.Domain.Services;
 using SQLReplicator.Services.ChangeTrackingServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLReplicator.Tests.Services.ChangeTrackingServices
 {
@@ -24,7 +19,7 @@ namespace SQLReplicator.Tests.Services.ChangeTrackingServices
         {
             // Arrange
             executeSqlCommandMock.Setup(x => x.ExecuteCommand(It.IsAny<string>()));
-            
+
             _createChangeTrackingTable = new CreateChangeTrackingTableService(executeSqlCommandMock.Object);
 
             // Act

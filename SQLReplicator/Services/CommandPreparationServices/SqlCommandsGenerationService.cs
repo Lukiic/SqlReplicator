@@ -57,7 +57,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
 
             return commands;
         }
-        
+
         private void ProcessInsertCommand(string tableName, List<string> attributes, List<string> values, List<string> commands)
         {
             commands.Add(SqlSyntaxFormattingService.GetInsertCommand(tableName, attributes, values));

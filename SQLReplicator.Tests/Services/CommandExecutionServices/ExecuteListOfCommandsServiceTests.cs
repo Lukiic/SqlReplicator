@@ -1,11 +1,6 @@
 ﻿using Moq;
 using SQLReplicator.Domain.Services;
 using SQLReplicator.Services.CommandExecutionServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLReplicator.Tests.Services.CommandExecutionServices
 {

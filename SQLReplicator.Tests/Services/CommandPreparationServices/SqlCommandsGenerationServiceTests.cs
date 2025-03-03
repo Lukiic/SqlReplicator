@@ -1,10 +1,5 @@
 ﻿using SQLReplicator.Services.CommandPreparationServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace SQLReplicator.Tests.Services.CommandPreparationServices
 {
@@ -41,7 +36,7 @@ namespace SQLReplicator.Tests.Services.CommandPreparationServices
                 new List<string>() { "1", "2", "3", "U", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" },
                 new List<string>() { "4", "5", "6", "F", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" },
                 new List<string>() { "7", "8", "9", "O", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" }
-            }; 
+            };
         }
 
         [Fact]
@@ -70,7 +65,7 @@ namespace SQLReplicator.Tests.Services.CommandPreparationServices
             List<string> commands = _sqlCommandsGenerationService.GetCommands(tableName, changeTrackingAttrs, trackedTableAttrs, keyAttributes, listOfValues);
 
             // Assert
-            foreach(string command in commands)
+            foreach (string command in commands)
             {
                 Assert.Contains($"DELETE FROM {tableName}Changes", command);
             }

@@ -81,6 +81,9 @@ namespace SQLReplicator.Application
             IExecuteListOfCommandsService executeListOfCommands = new ExecuteListOfCommandsService(executeCommandsDest);
 
             IUpdateChangeTrackingTableService updateChangeTrackingTable = new UpdateChangeTrackingTableService(executeCommandsSrc);
+
+            ICreateChangeTrackingTableService createTableService = new CreateChangeTrackingTableService(executeCommandsSrc);
+            ICreateTriggerService createTriggerService = new CreateTriggerService(executeCommandsSrc);
             #endregion
 
             #region ReadingKeyAttributesOfInputTable
@@ -89,9 +92,6 @@ namespace SQLReplicator.Application
             #endregion
 
             #region SettingUpSourceServerForTrackingChanges
-            ICreateChangeTrackingTableService createTableService = new CreateChangeTrackingTableService(executeCommandsSrc);
-            ICreateTriggerService createTriggerService = new CreateTriggerService(executeCommandsSrc);
-
             if (!createTableService.CreateCTTable(tableName, keyAttributes))
             {
                 Log.Fatal("Application cannot proceed: Failed to create Change Tracking table.");

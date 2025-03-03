@@ -2,11 +2,6 @@
 using SQLReplicator.Domain.Interfaces;
 using SQLReplicator.Domain.Services;
 using SQLReplicator.Services.CommandPreparationServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLReplicator.Tests.Services.CommandPreparationServices
 {
@@ -34,7 +29,7 @@ namespace SQLReplicator.Tests.Services.CommandPreparationServices
 
             List<string> commands;
             string lastChangeId;
-            
+
             // Act
 
             (commands, lastChangeId) = _trackedDataToCommandsService.GetCommandsAndLastChangeID("TableName", "0", new List<string>());

@@ -11,7 +11,7 @@ namespace SQLReplicator.Services.CommandExecutionServices
         {
             _connection = connection;
         }
-        
+
         // Input string can have multiple commands, so transaction is used
         public void ExecuteCommand(string command)
         {

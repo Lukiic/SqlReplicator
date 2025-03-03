@@ -1,9 +1,4 @@
 ﻿using SQLReplicator.Services.CommandPreparationServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLReplicator.Tests.Services.CommandPreparationServices
 {
@@ -33,7 +28,7 @@ namespace SQLReplicator.Tests.Services.CommandPreparationServices
             // Assert
             Assert.Contains(tableName, returnedCommand);
 
-            foreach(string attr in attributes)
+            foreach (string attr in attributes)
             {
                 Assert.Contains(attr, returnedCommand);
             }

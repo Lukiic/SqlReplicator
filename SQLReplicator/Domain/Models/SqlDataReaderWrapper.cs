@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using SQLReplicator.Domain.Interfaces;
+﻿using SQLReplicator.Domain.Interfaces;
 using System.Data;
 
 namespace SQLReplicator.Domain.Models

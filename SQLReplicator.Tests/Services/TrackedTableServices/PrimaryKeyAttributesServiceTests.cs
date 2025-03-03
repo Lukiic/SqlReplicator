@@ -2,12 +2,6 @@
 using SQLReplicator.Domain.Interfaces;
 using SQLReplicator.Domain.Services;
 using SQLReplicator.Services.TrackedTableServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Pkcs;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLReplicator.Tests.Services.TrackedTableServices
 {
@@ -59,7 +53,7 @@ namespace SQLReplicator.Tests.Services.TrackedTableServices
             Assert.NotNull(returnedList);
             Assert.NotEmpty(returnedList);
 
-            foreach(string key in returnedList)
+            foreach (string key in returnedList)
             {
                 Assert.NotNull(key);
             }
