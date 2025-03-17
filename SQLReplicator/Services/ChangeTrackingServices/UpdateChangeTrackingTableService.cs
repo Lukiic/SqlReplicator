@@ -1,4 +1,5 @@
-﻿using SQLReplicator.Domain.Services;
+﻿using Serilog;
+using SQLReplicator.Domain.Services;
 
 namespace SQLReplicator.Services.ChangeTrackingServices
 {
@@ -22,8 +23,9 @@ namespace SQLReplicator.Services.ChangeTrackingServices
             {
                 _executeSqlCommandService.ExecuteCommand(command);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Warning(ex, $"Failed to execute command: {command}");
                 isUpdated = false;
             }
 

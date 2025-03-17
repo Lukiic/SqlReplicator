@@ -17,9 +17,9 @@ namespace SQLReplicator.Services.CommandPreparationServices
         */
         public List<string> GetCommands(string tableName, List<string> changeTrackingAttrs, List<string> trackedTableAttrs, List<string> keyAttributes, List<List<string>> listOfValues)
         {
-            List<string> commands = new List<string>();
-
             int numOfRows = listOfValues.Count;
+            List<string> commands = new List<string>(2 * numOfRows);
+
             Log.Information($"{numOfRows} rows read from the Change Tracking table.");
 
             for (int i = 0; i < numOfRows; ++i)    // Reading all rows of change tracking table

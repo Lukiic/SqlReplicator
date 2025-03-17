@@ -20,7 +20,7 @@ namespace SQLReplicator.Domain.Models
 
         public List<string> ReadAttributes()
         {
-            List<string> attributes = new List<string>();
+            List<string> attributes = new List<string>(_reader.FieldCount);
 
             for (int i = 0; i < _reader.FieldCount; ++i)
             {
@@ -36,7 +36,7 @@ namespace SQLReplicator.Domain.Models
 
             while (_reader.Read())
             {
-                List<string?> row = new List<string?>();
+                List<string?> row = new List<string?>(_reader.FieldCount);
 
                 for (int i = 0; i < _reader.FieldCount; ++i)
                 {

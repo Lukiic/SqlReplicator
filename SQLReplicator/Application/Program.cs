@@ -51,7 +51,7 @@ namespace SQLReplicator.Application
             }
             catch (Exception ex)
             {
-                Log.Fatal("Application cannot start: Failed to establish a connection to the source server.");
+                Log.Fatal(ex, "Application cannot start: Failed to establish a connection to the source server.");
                 return;
             }
 
@@ -61,10 +61,10 @@ namespace SQLReplicator.Application
                 destConnection.Open();
                 Log.Information("Successfully established a connection to the destination server.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 srcConnection.Close();
-                Log.Fatal("Application cannot start: Failed to establish a connection to the destination server.");
+                Log.Fatal(ex, "Application cannot start: Failed to establish a connection to the destination server.");
                 return;
             }
             #endregion
@@ -137,6 +137,7 @@ namespace SQLReplicator.Application
             #endregion
 
             Log.Information("Application has finished executing and is shutting down.");
+
             LoggerService.CloseLogger();
         }
 

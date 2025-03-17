@@ -33,9 +33,9 @@ namespace SQLReplicator.Services.CommandExecutionServices
                         Log.Debug($"Executed {i} commands out of {commands.Count} so far.");
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Log.Warning($"Failed to execute command: {command}");
+                    Log.Warning(ex, $"Failed to execute command: {command}");
                 }
             }
 

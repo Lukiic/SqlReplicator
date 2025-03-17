@@ -1,4 +1,6 @@
-﻿namespace SQLReplicator.Services.FileServices
+﻿using Serilog;
+
+namespace SQLReplicator.Services.FileServices
 {
     public class FileImportService
     {
@@ -10,8 +12,9 @@
             {
                 importedLines = File.ReadAllLines(path).ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Fatal(ex, $"Failed to load data from file \"{path}\".");
                 importedLines = new List<string>();
             }
 
