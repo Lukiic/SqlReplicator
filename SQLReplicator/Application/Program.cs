@@ -12,7 +12,7 @@ namespace SQLReplicator.Application
 {
     public class Program
     {
-        private static bool shouldRun = true;
+        private static AppState appState = new AppState();
         static void Main(string[] args)
         {
             LoggerService.InitializeLogger();
@@ -105,8 +105,8 @@ namespace SQLReplicator.Application
             }
             #endregion
 
-            Console.CancelKeyPress += new ConsoleCancelEventHandler(CancelKeyPressHandler);
-            while (shouldRun)
+            AppTerminationHandler.SetupHandler(appState);
+            while (appState.ShouldRun)
             {
                 #region GettingDmlCommandsToBeExecuted
                 List<string> commandsForDestServer;
@@ -137,16 +137,7 @@ namespace SQLReplicator.Application
             #endregion
 
             Log.Information("Application has finished executing and is shutting down.");
-
             LoggerService.CloseLogger();
-        }
-
-        // Handler for CTRL+C action stops the while-true loop
-        private static void CancelKeyPressHandler(object sender, ConsoleCancelEventArgs e)
-        {
-            e.Cancel = true;
-            shouldRun = false;
-            Log.Information("Termination signal received. Exiting main loop and preparing for shutdown.");
         }
     }
 }
