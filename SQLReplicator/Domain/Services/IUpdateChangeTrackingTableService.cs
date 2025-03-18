@@ -2,6 +2,6 @@
 {
     public interface IUpdateChangeTrackingTableService
     {
-        public bool UpdateReplicatedBit(string tableName, string lastChangeID, string replicatedBitNum);
+        public bool UpdateReplicatedBit(string tableName, int lastChangeID, string replicatedBitNum);
     }
 }

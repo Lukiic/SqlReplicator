@@ -12,7 +12,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
             _executeSqlCommandService = executeSqlCommandService;
         }
 
-        public bool UpdateReplicatedBit(string tableName, string lastChangeID, string replicatedBitNum)
+        public bool UpdateReplicatedBit(string tableName, int lastChangeID, string replicatedBitNum)
         {
             string command = $@"UPDATE {tableName}Changes
                                 SET IsReplicated{replicatedBitNum} = 1

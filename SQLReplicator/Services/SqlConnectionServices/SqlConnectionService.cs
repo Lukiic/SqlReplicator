@@ -27,7 +27,7 @@ namespace SQLReplicator.Services.SqlConnectionServices
                 try
                 {
                     sqlConnection.Open();
-                    Log.Information($"Successfully established a connection to the database server \"{sqlConnection.Database}\".");
+                    Log.Debug($"Successfully established a connection to the database server \"{sqlConnection.Database}\".");
 
                     break;
                 }
@@ -43,7 +43,7 @@ namespace SQLReplicator.Services.SqlConnectionServices
         public void CloseConnection(SqlConnection sqlConnection)
         {
             sqlConnection.Close();
-            Log.Information($"Database server \"{sqlConnection.Database}\" connection successfully closed.");
+            Log.Debug($"Database server \"{sqlConnection.Database}\" connection successfully closed.");
         }
     }
 }

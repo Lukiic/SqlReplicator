@@ -15,11 +15,11 @@ namespace SQLReplicator.Services.CommandPreparationServices
             _sqlCommandsGenerationService = sqlCommandsGenerationService;
         }
 
-        public (List<string>, string) GetCommandsAndLastChangeID(string tableName, string replicatedBitNum, List<string> keyAttributes)
+        public (List<string>, int) GetCommandsAndLastChangeID(string tableName, string replicatedBitNum, List<string> keyAttributes)
         {
             IDataReaderWrapper dataReader;
             int keyAttrsCount = keyAttributes.Count;
-            string lastChangeID = "0";
+            int lastChangeID = 0;
             List<string> attributes;
             List<List<string?>> listOfValues;
 
@@ -49,7 +49,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
 
             if (listOfValues.Count != 0)
             {
-                lastChangeID = listOfValues.Last()[changeTrackingAttrs.Count];   // 'ChangeID' value for last row
+                lastChangeID = int.Parse(listOfValues.Last()[changeTrackingAttrs.Count]);   // 'ChangeID' value for last row
             }
 
             return (commands, lastChangeID);

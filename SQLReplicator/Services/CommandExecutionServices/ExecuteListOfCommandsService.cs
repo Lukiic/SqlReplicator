@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.Data.SqlClient;
+using Serilog;
 using SQLReplicator.Domain.Services;
 
 namespace SQLReplicator.Services.CommandExecutionServices
@@ -12,34 +13,37 @@ namespace SQLReplicator.Services.CommandExecutionServices
             _executeSqlCommandService = executeSqlCommandService;
         }
 
-        public void ExecuteCommands(List<string> commands)
+        // Returns the count of commands that were not executed from the input list
+        public int ExecuteCommands(List<string> commands)
         {
             if (commands.Count == 0)
             {
-                return;
+                return 0;
             }
 
             Log.Information($"Execution of {commands.Count} SQL commands started.");
-            int i = 0;
 
-            foreach (string command in commands)
+            for (int i = 0; i < commands.Count; ++i)
             {
+                string command = commands[i];
                 try
                 {
                     _executeSqlCommandService.ExecuteCommand(command);
-
-                    if (++i % 1000 == 0)
-                    {
-                        Log.Debug($"Executed {i} commands out of {commands.Count} so far.");
-                    }
+                }
+                catch (SqlException ex) when (ex.Number == 515) // NOT NULL constraint violation is normal for this application, so those commands are ignored
+                {
+                    continue;
                 }
                 catch (Exception ex)
                 {
                     Log.Warning(ex, $"Failed to execute command: {command}");
+                    return commands.Count - i;
                 }
             }
 
-            Log.Information($"Successfully executed {i} out of {commands.Count} commands.");
+            Log.Information($"Execution of {commands.Count} SQL commands finished successfully.");
+
+            return 0;   // No commands were left unexecuted
         }
     }
 }

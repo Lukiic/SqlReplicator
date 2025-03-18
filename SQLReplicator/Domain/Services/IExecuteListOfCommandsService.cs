@@ -2,6 +2,6 @@
 {
     public interface IExecuteListOfCommandsService
     {
-        public void ExecuteCommands(List<string> commands);
+        public int ExecuteCommands(List<string> commands);  // Returns the count of commands that were not executed from the input list
     }
 }

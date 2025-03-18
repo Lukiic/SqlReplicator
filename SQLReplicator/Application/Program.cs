@@ -103,16 +103,18 @@ namespace SQLReplicator.Application
 
                 #region GettingDmlCommandsToBeExecuted
                 List<string> commandsForDestServer;
-                string lastChangeID;
+                int lastChangeID;
                 (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, replicatedBitNum, keyAttributes);
                 #endregion
 
                 #region ExecutingCommandsOnDestinationServer
-                executeListOfCommands.ExecuteCommands(commandsForDestServer);
+                int unexecutedCommandsCount = executeListOfCommands.ExecuteCommands(commandsForDestServer);
                 #endregion
 
                 #region UpdatingReplicatedBitOfChangeTrackingTable
-                if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, lastChangeID, replicatedBitNum))
+                int changeID = lastChangeID - unexecutedCommandsCount;
+
+                if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, changeID, replicatedBitNum))
                 {
                     Log.Warning("Unable to update replicated bit in the Change Tracking table. The same data may be replicated again in the next execution if the issue persists.");
                 }
