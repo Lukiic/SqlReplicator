@@ -8,6 +8,7 @@ using SQLReplicator.Services.FileServices;
 using SQLReplicator.Services.LoggerServices;
 using SQLReplicator.Services.SqlConnectionServices;
 using SQLReplicator.Services.TrackedTableServices;
+using System.Transactions;
 
 namespace SQLReplicator.Application
 {
@@ -96,29 +97,37 @@ namespace SQLReplicator.Application
 
             while (appState.ShouldRun)
             {
-                #region OpeningServerConnections
-                sqlConnectionService.OpenConnection(srcConnection);
-                sqlConnectionService.OpenConnection(destConnection);
-                #endregion
-
-                #region GettingDmlCommandsToBeExecuted
-                List<string> commandsForDestServer;
-                int lastChangeID;
-                (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, replicatedBitNum, keyAttributes);
-                #endregion
-
-                #region ExecutingCommandsOnDestinationServer
-                int unexecutedCommandsCount = executeListOfCommands.ExecuteCommands(commandsForDestServer);
-                #endregion
-
-                #region UpdatingReplicatedBitOfChangeTrackingTable
-                int changeID = lastChangeID - unexecutedCommandsCount;
-
-                if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, changeID, replicatedBitNum))
+                TransactionManager.ImplicitDistributedTransactions = true;
+                using (TransactionScope scope = new TransactionScope()) // Distributed transaction
                 {
-                    Log.Warning("Unable to update replicated bit in the Change Tracking table. The same data may be replicated again in the next execution if the issue persists.");
+                    #region OpeningServerConnections
+                    sqlConnectionService.OpenConnection(srcConnection);
+                    sqlConnectionService.OpenConnection(destConnection);
+                    #endregion
+
+                    #region GettingDmlCommandsToBeExecuted
+                    List<string> commandsForDestServer;
+                    int lastChangeID;
+                    (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, replicatedBitNum, keyAttributes);
+                    #endregion
+
+                    #region ExecutingCommandsOnDestinationServer
+                    int unexecutedCommandsCount = executeListOfCommands.ExecuteCommands(commandsForDestServer);
+                    #endregion
+
+                    #region UpdatingReplicatedBitOfChangeTrackingTable
+                    int changeID = lastChangeID - unexecutedCommandsCount;
+
+                    if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, changeID, replicatedBitNum))
+                    {
+                        Log.Warning("Unable to update replicated bit in the Change Tracking table. The same data may be replicated again in the next execution if the issue persists.");
+                    }
+                    else
+                    {
+                        scope.Complete();   // Transaction is completed only if ReplicatedBit is updated
+                    }
+                    #endregion
                 }
-                #endregion
 
                 #region ClosingServerConnections
                 sqlConnectionService.CloseConnection(srcConnection);
