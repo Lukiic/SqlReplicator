@@ -6,6 +6,7 @@ using SQLReplicator.Services.CommandExecutionServices;
 using SQLReplicator.Services.CommandPreparationServices;
 using SQLReplicator.Services.FileServices;
 using SQLReplicator.Services.LoggerServices;
+using SQLReplicator.Services.SqlConnectionServices;
 using SQLReplicator.Services.TrackedTableServices;
 
 namespace SQLReplicator.Application
@@ -43,30 +44,13 @@ namespace SQLReplicator.Application
             #endregion
 
             #region ConnectingToServers
-            SqlConnection srcConnection = new SqlConnection(srcConnectionString);
-            try
-            {
-                srcConnection.Open();
-                Log.Information("Successfully established a connection to the source server.");
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Application cannot start: Failed to establish a connection to the source server.");
-                return;
-            }
+            ISqlConnectionService sqlConnectionService = new SqlConnectionService(appState);
 
+            SqlConnection srcConnection = new SqlConnection(srcConnectionString);
             SqlConnection destConnection = new SqlConnection(destConnectionString);
-            try
-            {
-                destConnection.Open();
-                Log.Information("Successfully established a connection to the destination server.");
-            }
-            catch (Exception ex)
-            {
-                srcConnection.Close();
-                Log.Fatal(ex, "Application cannot start: Failed to establish a connection to the destination server.");
-                return;
-            }
+
+            sqlConnectionService.OpenConnection(srcConnection);
+            sqlConnectionService.OpenConnection(destConnection);
             #endregion
 
             #region InitializingServices
@@ -105,9 +89,18 @@ namespace SQLReplicator.Application
             }
             #endregion
 
-            AppTerminationHandler.SetupHandler(appState);
+            #region ClosingServerConnections
+            sqlConnectionService.CloseConnection(srcConnection);
+            sqlConnectionService.CloseConnection(destConnection);
+            #endregion
+
             while (appState.ShouldRun)
             {
+                #region OpeningServerConnections
+                sqlConnectionService.OpenConnection(srcConnection);
+                sqlConnectionService.OpenConnection(destConnection);
+                #endregion
+
                 #region GettingDmlCommandsToBeExecuted
                 List<string> commandsForDestServer;
                 string lastChangeID;
@@ -125,16 +118,14 @@ namespace SQLReplicator.Application
                 }
                 #endregion
 
+                #region ClosingServerConnections
+                sqlConnectionService.CloseConnection(srcConnection);
+                sqlConnectionService.CloseConnection(destConnection);
+                #endregion
+
                 Log.Debug("Sleeping for 10 seconds before the next iteration.");
                 Thread.Sleep(10_000);
             }
-
-            #region ClosingServerConnections
-            srcConnection.Close();
-            Log.Information("Source server connection successfully closed.");
-            destConnection.Close();
-            Log.Information("Destination server connection successfully closed.");
-            #endregion
 
             Log.Information("Application has finished executing and is shutting down.");
             LoggerService.CloseLogger();
