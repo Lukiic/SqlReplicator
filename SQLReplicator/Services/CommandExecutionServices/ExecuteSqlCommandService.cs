@@ -15,6 +15,8 @@ namespace SQLReplicator.Services.CommandExecutionServices
         // Input string can have multiple commands, so transaction is used
         public void ExecuteCommand(string commands)
         {
+            ValidateArguments(commands);
+
             using (SqlTransaction transaction = _connection.BeginTransaction())
             {
                 try
@@ -28,6 +30,14 @@ namespace SQLReplicator.Services.CommandExecutionServices
                     transaction.Rollback();
                     throw;
                 }
+            }
+        }
+
+        private void ValidateArguments(string commands)
+        {
+            if (string.IsNullOrWhiteSpace(commands))
+            {
+                throw new ArgumentException("Command cannot be null, empty, or whitespace.", nameof(commands));
             }
         }
     }

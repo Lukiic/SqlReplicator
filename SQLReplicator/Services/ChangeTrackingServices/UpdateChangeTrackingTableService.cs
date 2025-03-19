@@ -14,6 +14,8 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 
         public bool UpdateReplicatedBit(string tableName, int lastChangeID, string replicatedBitNum)
         {
+            ValidateArguments(tableName, lastChangeID, replicatedBitNum);
+
             string command = $@"UPDATE {tableName}Changes
                                 SET IsReplicated{replicatedBitNum} = 1
                                 WHERE ChangeID <= {lastChangeID};";
@@ -30,6 +32,24 @@ namespace SQLReplicator.Services.ChangeTrackingServices
             }
 
             return isUpdated;
+        }
+
+        private void ValidateArguments(string tableName, int lastChangeID, string replicatedBitNum)
+        {
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                throw new ArgumentException("Table name cannot be null or empty.", nameof(tableName));
+            }
+
+            if (lastChangeID < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(lastChangeID), "Last change ID cannot be negative.");
+            }
+
+            if (string.IsNullOrWhiteSpace(replicatedBitNum))
+            {
+                throw new ArgumentException("Replicated bit number cannot be null or empty.", nameof(replicatedBitNum));
+            }
         }
     }
 }

@@ -17,6 +17,8 @@ namespace SQLReplicator.Services.CommandPreparationServices
 
         public (List<string>, int) GetCommandsAndLastChangeID(string tableName, string replicatedBitNum, List<string> keyAttributes)
         {
+            ValidateArguments(tableName, replicatedBitNum, keyAttributes);
+
             IDataReaderWrapper dataReader;
             int keyAttrsCount = keyAttributes.Count;
             int lastChangeID = 0;
@@ -53,6 +55,24 @@ namespace SQLReplicator.Services.CommandPreparationServices
             }
 
             return (commands, lastChangeID);
+        }
+
+        private void ValidateArguments(string tableName, string replicatedBitNum, List<string> keyAttributes)
+        {
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                throw new ArgumentException("Table name cannot be null or empty.", nameof(tableName));
+            }
+
+            if (string.IsNullOrWhiteSpace(replicatedBitNum) || !int.TryParse(replicatedBitNum, out _))
+            {
+                throw new ArgumentException("Replicated bit number must be a valid non-empty integer string.", nameof(replicatedBitNum));
+            }
+
+            if (keyAttributes == null || keyAttributes.Count == 0)
+            {
+                throw new ArgumentException("Key attributes list cannot be null or empty.", nameof(keyAttributes));
+            }
         }
     }
 }

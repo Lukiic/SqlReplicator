@@ -18,6 +18,8 @@ namespace SQLReplicator.Services.ChangeTrackingServices
         */
         public bool CreateCTTable(string tableName, List<string> keyAttributes)
         {
+            ValidateArguments(tableName, keyAttributes);
+
             string command = $@"
                 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}Changes')
                 BEGIN
@@ -37,6 +39,24 @@ namespace SQLReplicator.Services.ChangeTrackingServices
             }
 
             return isCreated;
+        }
+
+        private void ValidateArguments(string tableName, List<string> keyAttributes)
+        {
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                throw new ArgumentException("Table name cannot be null or empty.", nameof(tableName));
+            }
+
+            if (keyAttributes == null || keyAttributes.Count == 0)
+            {
+                throw new ArgumentException("Key attributes list cannot be null or empty.", nameof(keyAttributes));
+            }
+
+            if (keyAttributes.Any(string.IsNullOrWhiteSpace))
+            {
+                throw new ArgumentException("Key attributes cannot contain null or empty values.", nameof(keyAttributes));
+            }
         }
     }
 }

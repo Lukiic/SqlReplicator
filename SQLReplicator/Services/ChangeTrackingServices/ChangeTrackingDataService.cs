@@ -13,6 +13,8 @@ namespace SQLReplicator.Services.ChangeTrackingServices
         }
         public IDataReaderWrapper LoadData(string tableName, string replicatedBitNum, List<string> keyAttributes)
         {
+            ValidateArguments(tableName, replicatedBitNum, keyAttributes);
+
             string keysFormat = string.Join(" AND ", keyAttributes.Zip(keyAttributes, (k1, k2) => $"{tableName}Changes.{k1} = {tableName}.{k2}"));
 
             string query = @$"SELECT *
@@ -21,6 +23,24 @@ namespace SQLReplicator.Services.ChangeTrackingServices
                            ORDER BY ChangeID ASC";   // SELECT without ORDER BY may not give us proper order
 
             return _executeSqlQueryService.ExecuteQuery(query);
+        }
+
+        private void ValidateArguments(string tableName, string replicatedBitNum, List<string> keyAttributes)
+        {
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                throw new ArgumentException("Table name cannot be null or empty.", nameof(tableName));
+            }
+
+            if (string.IsNullOrWhiteSpace(replicatedBitNum) || !int.TryParse(replicatedBitNum, out _))
+            {
+                throw new ArgumentException("Replicated bit number must be a valid non-empty integer string.", nameof(replicatedBitNum));
+            }
+
+            if (keyAttributes == null || keyAttributes.Count == 0)
+            {
+                throw new ArgumentException("Key attributes list cannot be null or empty.", nameof(keyAttributes));
+            }
         }
     }
 }

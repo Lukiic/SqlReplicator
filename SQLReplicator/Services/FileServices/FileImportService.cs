@@ -6,6 +6,8 @@ namespace SQLReplicator.Services.FileServices
     {
         public static List<string> LoadData(string path)
         {
+            ValidateArguments(path);
+
             List<string> importedLines;
 
             try
@@ -19,6 +21,19 @@ namespace SQLReplicator.Services.FileServices
             }
 
             return importedLines;
+        }
+
+        private static void ValidateArguments(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException("File path cannot be null, empty, or whitespace.", nameof(path));
+            }
+
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException($"The file \"{path}\" does not exist.", path);
+            }
         }
     }
 }

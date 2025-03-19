@@ -22,6 +22,8 @@ namespace SQLReplicator.Services.SqlConnectionServices
 
         public void OpenConnection(SqlConnection sqlConnection)
         {
+            ValidateArguments(sqlConnection);
+
             while (appState.ShouldRun)
             {
                 try
@@ -42,8 +44,23 @@ namespace SQLReplicator.Services.SqlConnectionServices
 
         public void CloseConnection(SqlConnection sqlConnection)
         {
+            ValidateArguments(sqlConnection);
+
             sqlConnection.Close();
             Log.Debug($"Database server \"{sqlConnection.Database}\" connection successfully closed.");
+        }
+
+        private void ValidateArguments(SqlConnection sqlConnection)
+        {
+            if (sqlConnection == null)
+            {
+                throw new ArgumentNullException(nameof(sqlConnection), "SqlConnection cannot be null.");
+            }
+
+            if (string.IsNullOrEmpty(sqlConnection.ConnectionString))
+            {
+                throw new ArgumentException("The connection string cannot be null or empty.", nameof(sqlConnection));
+            }
         }
     }
 }

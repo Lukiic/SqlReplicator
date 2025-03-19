@@ -17,6 +17,8 @@ namespace SQLReplicator.Services.CommandPreparationServices
         */
         public List<string> GetCommands(string tableName, List<string> changeTrackingAttrs, List<string> trackedTableAttrs, List<string> keyAttributes, List<List<string>> listOfValues)
         {
+            ValidateArguments(tableName, changeTrackingAttrs, trackedTableAttrs, keyAttributes, listOfValues);
+
             int numOfRows = listOfValues.Count;
             List<string> commands = new List<string>(2 * numOfRows);
 
@@ -56,6 +58,49 @@ namespace SQLReplicator.Services.CommandPreparationServices
             commands = commands.Chunk(2).Select(pair => string.Concat(pair)).ToList();
 
             return commands;
+        }
+        private void ValidateArguments(string tableName, List<string> changeTrackingAttrs, List<string> trackedTableAttrs, List<string> keyAttributes, List<List<string>> listOfValues)
+        {
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                throw new ArgumentException("Table name cannot be null, empty, or whitespace.", nameof(tableName));
+            }
+
+            if (changeTrackingAttrs == null || changeTrackingAttrs.Count == 0)
+            {
+                throw new ArgumentException("Change tracking attributes cannot be null or empty.", nameof(changeTrackingAttrs));
+            }
+
+            if (trackedTableAttrs == null || trackedTableAttrs.Count == 0)
+            {
+                throw new ArgumentException("Tracked table attributes cannot be null or empty.", nameof(trackedTableAttrs));
+            }
+
+            if (keyAttributes == null || keyAttributes.Count == 0)
+            {
+                throw new ArgumentException("Key attributes cannot be null or empty.", nameof(keyAttributes));
+            }
+
+            if (listOfValues == null)
+            {
+                throw new ArgumentException("List of values cannot be null.", nameof(listOfValues));
+            }
+
+            if (changeTrackingAttrs.Count != keyAttributes.Count + 1)
+            {
+                throw new ArgumentException("Change tracking attributes must have exactly one more element than key attributes.");
+            }
+
+            if (trackedTableAttrs.Count < keyAttributes.Count)
+            {
+                throw new ArgumentException("Tracked table attributes must have at least as many elements as key attributes.");
+            }
+
+            int expectedListSize = changeTrackingAttrs.Count + trackedTableAttrs.Count + 3;
+            if (listOfValues.Any(values => values == null || values.Count != expectedListSize))
+            {
+                throw new ArgumentException($"Each inner list in listOfValues must contain exactly {expectedListSize} elements.");
+            }
         }
 
         private void ProcessInsertCommand(string tableName, List<string> attributes, List<string> values, List<string> commands)

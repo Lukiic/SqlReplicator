@@ -16,10 +16,20 @@ namespace SQLReplicator.Services.CommandExecutionServices
 
         public IDataReaderWrapper ExecuteQuery(string query)
         {
+            ValidateArguments(query);
+
             SqlCommand sqlCommand = new SqlCommand(query, _connection);
             SqlDataReader reader = sqlCommand.ExecuteReader();
 
             return new SqlDataReaderWrapper(reader);
+        }
+
+        private void ValidateArguments(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                throw new ArgumentException("Query cannot be null, empty, or whitespace.", nameof(query));
+            }
         }
     }
 }

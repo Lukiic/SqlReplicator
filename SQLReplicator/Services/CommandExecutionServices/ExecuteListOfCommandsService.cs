@@ -16,6 +16,7 @@ namespace SQLReplicator.Services.CommandExecutionServices
         // Returns the count of commands that were not executed from the input list
         public int ExecuteCommands(List<string> commands)
         {
+            ValidateArguments(commands);
             if (commands.Count == 0)
             {
                 return 0;
@@ -44,6 +45,19 @@ namespace SQLReplicator.Services.CommandExecutionServices
             Log.Information($"Execution of {commands.Count} SQL commands finished successfully.");
 
             return 0;   // No commands were left unexecuted
+        }
+
+        private void ValidateArguments(List<string> commands)
+        {
+            if (commands == null)
+            {
+                throw new ArgumentException("Commands list cannot be null.", nameof(commands));
+            }
+
+            if (commands.Any(string.IsNullOrWhiteSpace))
+            {
+                throw new ArgumentException("Commands list cannot contain null or empty commands.", nameof(commands));
+            }
         }
     }
 }
