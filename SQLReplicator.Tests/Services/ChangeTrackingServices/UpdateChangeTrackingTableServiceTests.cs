@@ -23,7 +23,7 @@ namespace SQLReplicator.Tests.Services.ChangeTrackingServices
             _updateChangeTrackingTable = new UpdateChangeTrackingTableService(executeSqlCommandMock.Object);
 
             // Act
-            bool retVal = _updateChangeTrackingTable.UpdateReplicatedBit("TableName", "LastChangeID", "ReplicatedBitNum");
+            bool retVal = _updateChangeTrackingTable.UpdateReplicatedBit("TableName", 0, "ReplicatedBitNum");
 
             // Assert
             Assert.True(retVal);
@@ -38,7 +38,7 @@ namespace SQLReplicator.Tests.Services.ChangeTrackingServices
             _updateChangeTrackingTable = new UpdateChangeTrackingTableService(executeSqlCommandMock.Object);
 
             // Act
-            bool retVal = _updateChangeTrackingTable.UpdateReplicatedBit("TableName", "LastChangeID", "ReplicatedBitNum");
+            bool retVal = _updateChangeTrackingTable.UpdateReplicatedBit("TableName", 0, "ReplicatedBitNum");
 
             // Assert
             Assert.False(retVal);

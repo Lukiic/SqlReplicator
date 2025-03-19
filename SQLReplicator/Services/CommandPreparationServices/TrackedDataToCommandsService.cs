@@ -35,7 +35,7 @@ namespace SQLReplicator.Services.CommandPreparationServices
             }
             catch (Exception ex)
             {
-                Log.Warning(ex, "Unable to read data from the Change Tracking table.");
+                Log.Warning(ex, $"Unable to read data from the \"{tableName}\" Change Tracking table.");
                 return (new List<string>(), lastChangeID);
             }
 

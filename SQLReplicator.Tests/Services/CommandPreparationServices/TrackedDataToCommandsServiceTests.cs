@@ -28,15 +28,14 @@ namespace SQLReplicator.Tests.Services.CommandPreparationServices
             _trackedDataToCommandsService = new TrackedDataToCommandsService(changeTrackingDataMock.Object, sqlCommandsGenerationMock.Object);
 
             List<string> commands;
-            string lastChangeId;
+            int lastChangeId;
 
             // Act
-
             (commands, lastChangeId) = _trackedDataToCommandsService.GetCommandsAndLastChangeID("TableName", "0", new List<string>());
 
             // Assert
             Assert.Empty(commands);
-            Assert.Equal("0", lastChangeId);
+            Assert.Equal(0, lastChangeId);
         }
 
         [Fact]

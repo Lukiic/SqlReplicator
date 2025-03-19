@@ -32,16 +32,15 @@ namespace SQLReplicator.Application
             #region ValidatingFileData
             List<string> dataFromFile = FileImportService.LoadData(filePath);
 
-            if (dataFromFile.Count != 4)
+            if (dataFromFile.Count != 3)
             {
-                Log.Fatal("Application cannot start: Missing or invalid configuration data in the file. Expected fields: Source server connection string, Destination server connection string, Table name, Instance ID (number of replicated bit).");
+                Log.Fatal("Application cannot start: Missing or invalid configuration data in the file. Expected fields: Source server connection string, Destination server connection string, Instance ID (number of replicated bit).");
                 return;
             }
 
             string srcConnectionString = dataFromFile[0];
             string destConnectionString = dataFromFile[1];
-            string tableName = dataFromFile[2];
-            string replicatedBitNum = dataFromFile[3];
+            string replicatedBitNum = dataFromFile[2];
             #endregion
 
             #region ConnectingToServers
@@ -60,6 +59,8 @@ namespace SQLReplicator.Application
             IExecuteSqlCommandService executeCommandsDest = new ExecuteSqlCommandService(destConnection);
 
             IPrimaryKeyAttributesService primaryKeyAttributesService = new PrimaryKeyAttributesService(executeQueriesSrc);
+            ITableNamesFetcherService tableNamesFetcher = new TableNamesFetcherService(executeQueriesSrc);
+
             IChangeTrackingDataService changeTrackingDataService = new ChangeTrackingDataService(executeQueriesSrc);
             ISqlCommandsGenerationService sqlCommandsGeneration = new SqlCommandsGenerationService();
             ITrackedDataToCommandsService trackedDataToCommands = new TrackedDataToCommandsService(changeTrackingDataService, sqlCommandsGeneration);
@@ -71,24 +72,33 @@ namespace SQLReplicator.Application
             ICreateTriggerService createTriggerService = new CreateTriggerService(executeCommandsSrc);
             #endregion
 
-            #region ReadingKeyAttributesOfInputTable
-            List<string> keyAttributes = primaryKeyAttributesService.GetPrimaryKeyAttributes(tableName);
-            int keyAttributesCount = keyAttributes.Count;
+            #region GettingAllTableNames
+            List<string> tableNames = tableNamesFetcher.GetTableNames();
             #endregion
 
-            #region SettingUpSourceServerForTrackingChanges
-            if (!createTableService.CreateCTTable(tableName, keyAttributes))
-            {
-                Log.Fatal("Application cannot proceed: Failed to create Change Tracking table.");
-                return;
-            }
+            List<List<string>> keyAttrsForEachTable = new List<List<string>>();
 
-            if (!createTriggerService.CreateTrigger(tableName, keyAttributes))
+            foreach (string tableName in tableNames)
             {
-                Log.Fatal($"Application cannot proceed: Failed to create Change Tracking trigger.");
-                return;
+                #region ReadingKeyAttributesOfInputTable
+                List<string> keyAttributes = primaryKeyAttributesService.GetPrimaryKeyAttributes(tableName);
+                keyAttrsForEachTable.Add(keyAttributes);
+                #endregion
+
+                #region SettingUpSourceServerForTrackingChanges
+                if (!createTableService.CreateCTTable(tableName, keyAttributes))
+                {
+                    Log.Fatal($"Application cannot proceed: Failed to create Change Tracking table for \"{tableName}\" table.");
+                    return;
+                }
+
+                if (!createTriggerService.CreateTrigger(tableName, keyAttributes))
+                {
+                    Log.Fatal($"Application cannot proceed: Failed to create Change Tracking trigger for \"{tableName}\" table.");
+                    return;
+                }
+                #endregion
             }
-            #endregion
 
             #region ClosingServerConnections
             sqlConnectionService.CloseConnection(srcConnection);
@@ -97,42 +107,49 @@ namespace SQLReplicator.Application
 
             while (appState.ShouldRun)
             {
-                TransactionManager.ImplicitDistributedTransactions = true;
-                using (TransactionScope scope = new TransactionScope()) // Distributed transaction
+                for (int i = 0; i < tableNames.Count; ++i)
                 {
-                    #region OpeningServerConnections
-                    sqlConnectionService.OpenConnection(srcConnection);
-                    sqlConnectionService.OpenConnection(destConnection);
-                    #endregion
+                    string tableName = tableNames[i];
+                    List<string> keyAttributes = keyAttrsForEachTable[i];
+                    Log.Information($"Processing \"{tableName}\" table.");
 
-                    #region GettingDmlCommandsToBeExecuted
-                    List<string> commandsForDestServer;
-                    int lastChangeID;
-                    (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, replicatedBitNum, keyAttributes);
-                    #endregion
-
-                    #region ExecutingCommandsOnDestinationServer
-                    int unexecutedCommandsCount = executeListOfCommands.ExecuteCommands(commandsForDestServer);
-                    #endregion
-
-                    #region UpdatingReplicatedBitOfChangeTrackingTable
-                    int changeID = lastChangeID - unexecutedCommandsCount;
-
-                    if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, changeID, replicatedBitNum))
+                    TransactionManager.ImplicitDistributedTransactions = true;
+                    using (TransactionScope scope = new TransactionScope()) // Distributed transaction
                     {
-                        Log.Warning("Unable to update replicated bit in the Change Tracking table. The same data may be replicated again in the next execution if the issue persists.");
+                        #region OpeningServerConnections
+                        sqlConnectionService.OpenConnection(srcConnection);
+                        sqlConnectionService.OpenConnection(destConnection);
+                        #endregion
+
+                        #region GettingDmlCommandsToBeExecuted
+                        List<string> commandsForDestServer;
+                        int lastChangeID;
+                        (commandsForDestServer, lastChangeID) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, replicatedBitNum, keyAttributes);
+                        #endregion
+
+                        #region ExecutingCommandsOnDestinationServer
+                        int unexecutedCommandsCount = executeListOfCommands.ExecuteCommands(commandsForDestServer);
+                        #endregion
+
+                        #region UpdatingReplicatedBitOfChangeTrackingTable
+                        int changeID = lastChangeID - unexecutedCommandsCount;
+
+                        if (!updateChangeTrackingTable.UpdateReplicatedBit(tableName, changeID, replicatedBitNum))
+                        {
+                            Log.Warning("Unable to update replicated bit in the Change Tracking table. The same data may be replicated again in the next execution if the issue persists.");
+                        }
+                        else
+                        {
+                            scope.Complete();   // Transaction is completed only if ReplicatedBit is updated
+                        }
+                        #endregion
                     }
-                    else
-                    {
-                        scope.Complete();   // Transaction is completed only if ReplicatedBit is updated
-                    }
+
+                    #region ClosingServerConnections
+                    sqlConnectionService.CloseConnection(srcConnection);
+                    sqlConnectionService.CloseConnection(destConnection);
                     #endregion
                 }
-
-                #region ClosingServerConnections
-                sqlConnectionService.CloseConnection(srcConnection);
-                sqlConnectionService.CloseConnection(destConnection);
-                #endregion
 
                 Log.Debug("Sleeping for 10 seconds before the next iteration.");
                 Thread.Sleep(10_000);
