@@ -76,7 +76,7 @@ namespace SQLReplicator.Application
             List<string> tableNames = tableNamesFetcher.GetTableNames();
             #endregion
 
-            List<List<string>> keyAttrsForEachTable = new List<List<string>>();
+            List<List<string>> keyAttrsForEachTable = new List<List<string>>(tableNames.Count);
 
             foreach (string tableName in tableNames)
             {
