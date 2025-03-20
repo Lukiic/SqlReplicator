@@ -23,7 +23,7 @@ namespace SQLReplicator.Tests.Services.ChangeTrackingServices
             _createChangeTrackingTable = new CreateChangeTrackingTableService(executeSqlCommandMock.Object);
 
             // Act
-            bool retVal = _createChangeTrackingTable.CreateCTTable("TableName", new List<string>());
+            bool retVal = _createChangeTrackingTable.CreateCTTable("TableName", new List<string> {"ID"});
 
             // Assert
             Assert.True(retVal);
@@ -38,7 +38,7 @@ namespace SQLReplicator.Tests.Services.ChangeTrackingServices
             _createChangeTrackingTable = new CreateChangeTrackingTableService(executeSqlCommandMock.Object);
 
             // Act
-            bool retVal = _createChangeTrackingTable.CreateCTTable("TableName", new List<string>());
+            bool retVal = _createChangeTrackingTable.CreateCTTable("TableName", new List<string>() { "ID" });
 
             // Assert
             Assert.False(retVal);

@@ -31,7 +31,7 @@ namespace SQLReplicator.Tests.Services.CommandPreparationServices
             int lastChangeId;
 
             // Act
-            (commands, lastChangeId) = _trackedDataToCommandsService.GetCommandsAndLastChangeID("TableName", "0", new List<string>());
+            (commands, lastChangeId) = _trackedDataToCommandsService.GetCommandsAndLastChangeID("TableName", "0", new List<string>() { "ID" });
 
             // Assert
             Assert.Empty(commands);
@@ -54,7 +54,7 @@ namespace SQLReplicator.Tests.Services.CommandPreparationServices
             _trackedDataToCommandsService = new TrackedDataToCommandsService(changeTrackingDataMock.Object, sqlCommandsGenerationMock.Object);
 
             // Act
-            _trackedDataToCommandsService.GetCommandsAndLastChangeID("TableName", "0", new List<string>());
+            _trackedDataToCommandsService.GetCommandsAndLastChangeID("TableName", "0", new List<string>() { "ID" });
 
             // Assert
             dataReaderMock.Verify(x => x.Dispose(), Times.Once);

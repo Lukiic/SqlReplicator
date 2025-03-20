@@ -23,7 +23,7 @@ namespace SQLReplicator.Tests.Services.ChangeTrackingServices
             _createTriggerService = new CreateTriggerService(executeSqlCommandMock.Object);
 
             // Act
-            bool retVal = _createTriggerService.CreateTrigger("TableName", new List<string>());
+            bool retVal = _createTriggerService.CreateTrigger("TableName", new List<string>() { "ID" });
 
             // Assert
             Assert.True(retVal);
@@ -38,7 +38,7 @@ namespace SQLReplicator.Tests.Services.ChangeTrackingServices
             _createTriggerService = new CreateTriggerService(executeSqlCommandMock.Object);
 
             // Act
-            bool retVal = _createTriggerService.CreateTrigger("TableName", new List<string>());
+            bool retVal = _createTriggerService.CreateTrigger("TableName", new List<string>() { "ID" });
 
             // Assert
             Assert.False(retVal);
