@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using SQLReplicator.Domain.Models;
 using SQLReplicator.Domain.Services;
 
 namespace SQLReplicator.Services.CommandExecutionServices
@@ -17,17 +18,17 @@ namespace SQLReplicator.Services.CommandExecutionServices
         {
             ValidateArguments(commands);
 
-            using (SqlTransaction transaction = _connection.BeginTransaction())
+            using (DbTransactionManager transactionManager = new DbTransactionManager(_connection))
             {
                 try
                 {
-                    SqlCommand sqlCommand = new SqlCommand(commands, _connection, transaction);
+                    SqlCommand sqlCommand = new SqlCommand(commands, _connection, transactionManager.Transaction);
                     sqlCommand.ExecuteNonQuery();
-                    transaction.Commit();
+                    transactionManager.Commit();
                 }
                 catch (Exception)
                 {
-                    transaction.Rollback();
+                    transactionManager.Rollback();
                     throw;
                 }
             }
