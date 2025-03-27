@@ -52,9 +52,9 @@ namespace SQLReplicator.BDDTests.StepDefinitions
             _connection.Open();
 
             string checkTriggerCommand = $@"
-                                         SELECT COUNT(*)
-                                         FROM sys.objects
-                                         WHERE type = 'TR' AND name = '{triggerName}'";
+                                            SELECT COUNT(*)
+                                            FROM sys.objects
+                                            WHERE type = 'TR' AND name = '{triggerName}'";
 
             using var command = new SqlCommand(checkTriggerCommand, _connection);
             int triggerCount = (int)command.ExecuteScalar();
