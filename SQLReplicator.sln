@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLReplicator", "SQLReplica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLReplicator.Tests", "SQLReplicator.Tests\SQLReplicator.Tests.csproj", "{C363B014-1C0C-4289-A8C6-BAD947AF905B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLReplicator.BDDTests", "SQLReplicator.BDDTests\SQLReplicator.BDDTests.csproj", "{9DCDF587-D86C-4405-BCE5-34306F62756C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C363B014-1C0C-4289-A8C6-BAD947AF905B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C363B014-1C0C-4289-A8C6-BAD947AF905B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C363B014-1C0C-4289-A8C6-BAD947AF905B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DCDF587-D86C-4405-BCE5-34306F62756C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DCDF587-D86C-4405-BCE5-34306F62756C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DCDF587-D86C-4405-BCE5-34306F62756C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DCDF587-D86C-4405-BCE5-34306F62756C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
