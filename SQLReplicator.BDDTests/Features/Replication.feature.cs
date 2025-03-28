@@ -19,21 +19,21 @@ namespace SQLReplicator.BDDTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "2.0.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class TrackingChangesFeature : object, Xunit.IClassFixture<TrackingChangesFeature.FixtureData>, Xunit.IAsyncLifetime
+    public partial class ReplicationFeature : object, Xunit.IClassFixture<ReplicationFeature.FixtureData>, Xunit.IAsyncLifetime
     {
         
         private global::Reqnroll.ITestRunner testRunner;
         
         private static string[] featureTags = ((string[])(null));
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "TrackingChanges", null, global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Replication", null, global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "TrackingChanges.feature"
+#line 1 "Replication.feature"
 #line hidden
         
-        public TrackingChangesFeature(TrackingChangesFeature.FixtureData fixtureData, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public ReplicationFeature(ReplicationFeature.FixtureData fixtureData, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
         }
@@ -92,14 +92,17 @@ namespace SQLReplicator.BDDTests.Features
             await this.TestTearDownAsync();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Insertion in Orders table is tracked in OrdersChanges table")]
-        [Xunit.TraitAttribute("FeatureTitle", "TrackingChanges")]
-        [Xunit.TraitAttribute("Description", "Insertion in Orders table is tracked in OrdersChanges table")]
-        public async System.Threading.Tasks.Task InsertionInOrdersTableIsTrackedInOrdersChangesTable()
+        [Xunit.SkippableFactAttribute(DisplayName="Insertion in Orders table of source server causes insertion in Orders table of de" +
+            "stination server")]
+        [Xunit.TraitAttribute("FeatureTitle", "Replication")]
+        [Xunit.TraitAttribute("Description", "Insertion in Orders table of source server causes insertion in Orders table of de" +
+            "stination server")]
+        public async System.Threading.Tasks.Task InsertionInOrdersTableOfSourceServerCausesInsertionInOrdersTableOfDestinationServer()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Insertion in Orders table is tracked in OrdersChanges table", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Insertion in Orders table of source server causes insertion in Orders table of de" +
+                    "stination server", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 3
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -116,47 +119,62 @@ this.ScenarioInitialize(scenarioInfo);
 #line 5
  await testRunner.AndAsync("source database does not have a change tracking table for table \"Orders\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-                global::Reqnroll.Table table8 = new global::Reqnroll.Table(new string[] {
-                            "AttributeName"});
-                table8.AddRow(new string[] {
-                            "OrderID"});
-                table8.AddRow(new string[] {
-                            "ProductID"});
 #line 6
- await testRunner.WhenAsync("I run CreateTrigger service for table \"Orders\" with key attributes:", ((string)(null)), table8, "When ");
+ await testRunner.AndAsync("destination database has an empty \"Orders\" table", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-                global::Reqnroll.Table table9 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table3 = new global::Reqnroll.Table(new string[] {
                             "AttributeName"});
-                table9.AddRow(new string[] {
+                table3.AddRow(new string[] {
                             "OrderID"});
-                table9.AddRow(new string[] {
+                table3.AddRow(new string[] {
                             "ProductID"});
-#line 10
- await testRunner.AndAsync("I run CreateChangeTrackingTable service for table \"Orders\" with key attributes:", ((string)(null)), table9, "And ");
+#line 7
+ await testRunner.WhenAsync("I run CreateTrigger service for table \"Orders\" with key attributes:", ((string)(null)), table3, "When ");
 #line hidden
-                global::Reqnroll.Table table10 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table4 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table4.AddRow(new string[] {
+                            "OrderID"});
+                table4.AddRow(new string[] {
+                            "ProductID"});
+#line 11
+ await testRunner.AndAsync("I run CreateChangeTrackingTable service for table \"Orders\" with key attributes:", ((string)(null)), table4, "And ");
+#line hidden
+                global::Reqnroll.Table table5 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
                             "CustomerName",
                             "Quantity"});
-                table10.AddRow(new string[] {
+                table5.AddRow(new string[] {
                             "998",
                             "924124",
                             "Tom Hanks",
                             "12"});
-#line 14
- await testRunner.AndAsync("I insert new row in table \"Orders\" with values:", ((string)(null)), table10, "And ");
+#line 15
+ await testRunner.AndAsync("I insert new row in table \"Orders\" with values:", ((string)(null)), table5, "And ");
 #line hidden
-                global::Reqnroll.Table table11 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table6 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table6.AddRow(new string[] {
+                            "OrderID"});
+                table6.AddRow(new string[] {
+                            "ProductID"});
+#line 18
+ await testRunner.AndAsync("I run services for generating and executing commands on table \"Orders\" with key a" +
+                        "ttributes:", ((string)(null)), table6, "And ");
+#line hidden
+                global::Reqnroll.Table table7 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
-                            "Operation"});
-                table11.AddRow(new string[] {
+                            "CustomerName",
+                            "Quantity"});
+                table7.AddRow(new string[] {
                             "998",
                             "924124",
-                            "I"});
-#line 17
- await testRunner.ThenAsync("the table \"OrdersChanges\" should have row with values:", ((string)(null)), table11, "Then ");
+                            "Tom Hanks",
+                            "12"});
+#line 22
+ await testRunner.ThenAsync("the table \"Orders\" of destination server should have row with values:", ((string)(null)), table7, "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -169,12 +187,12 @@ this.ScenarioInitialize(scenarioInfo);
             
             async System.Threading.Tasks.Task Xunit.IAsyncLifetime.InitializeAsync()
             {
-                await TrackingChangesFeature.FeatureSetupAsync();
+                await ReplicationFeature.FeatureSetupAsync();
             }
             
             async System.Threading.Tasks.Task Xunit.IAsyncLifetime.DisposeAsync()
             {
-                await TrackingChangesFeature.FeatureTearDownAsync();
+                await ReplicationFeature.FeatureTearDownAsync();
             }
         }
     }
