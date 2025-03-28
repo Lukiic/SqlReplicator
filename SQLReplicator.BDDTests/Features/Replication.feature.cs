@@ -180,6 +180,94 @@ this.ScenarioInitialize(scenarioInfo);
             await this.ScenarioCleanupAsync();
         }
         
+        [Xunit.SkippableFactAttribute(DisplayName="Update in Orders table of source server causes update in Orders table of destinat" +
+            "ion server")]
+        [Xunit.TraitAttribute("FeatureTitle", "Replication")]
+        [Xunit.TraitAttribute("Description", "Update in Orders table of source server causes update in Orders table of destinat" +
+            "ion server")]
+        public async System.Threading.Tasks.Task UpdateInOrdersTableOfSourceServerCausesUpdateInOrdersTableOfDestinationServer()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Update in Orders table of source server causes update in Orders table of destinat" +
+                    "ion server", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 26
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 27
+ await testRunner.GivenAsync("source database does not have a trigger for table \"Orders\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 28
+ await testRunner.AndAsync("source database does not have a change tracking table for table \"Orders\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 29
+ await testRunner.AndAsync("destination database has an empty \"Orders\" table", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+                global::Reqnroll.Table table8 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table8.AddRow(new string[] {
+                            "OrderID"});
+                table8.AddRow(new string[] {
+                            "ProductID"});
+#line 30
+ await testRunner.WhenAsync("I run CreateTrigger service for table \"Orders\" with key attributes:", ((string)(null)), table8, "When ");
+#line hidden
+                global::Reqnroll.Table table9 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table9.AddRow(new string[] {
+                            "OrderID"});
+                table9.AddRow(new string[] {
+                            "ProductID"});
+#line 34
+ await testRunner.AndAsync("I run CreateChangeTrackingTable service for table \"Orders\" with key attributes:", ((string)(null)), table9, "And ");
+#line hidden
+                global::Reqnroll.Table table10 = new global::Reqnroll.Table(new string[] {
+                            "OrderID",
+                            "ProductID",
+                            "CustomerName",
+                            "Quantity"});
+                table10.AddRow(new string[] {
+                            "1",
+                            "101",
+                            "Alice Johnson",
+                            "2"});
+#line 38
+ await testRunner.AndAsync("I update existing row in table \"Orders\" with values:", ((string)(null)), table10, "And ");
+#line hidden
+                global::Reqnroll.Table table11 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table11.AddRow(new string[] {
+                            "OrderID"});
+                table11.AddRow(new string[] {
+                            "ProductID"});
+#line 41
+ await testRunner.AndAsync("I run services for generating and executing commands on table \"Orders\" with key a" +
+                        "ttributes:", ((string)(null)), table11, "And ");
+#line hidden
+                global::Reqnroll.Table table12 = new global::Reqnroll.Table(new string[] {
+                            "OrderID",
+                            "ProductID",
+                            "CustomerName",
+                            "Quantity"});
+                table12.AddRow(new string[] {
+                            "1",
+                            "101",
+                            "Alice Johnson",
+                            "2"});
+#line 45
+ await testRunner.ThenAsync("the table \"Orders\" of destination server should have row with values:", ((string)(null)), table12, "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
         [System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "2.0.0.0")]
         [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
         public class FixtureData : object, Xunit.IAsyncLifetime
