@@ -162,6 +162,157 @@ this.ScenarioInitialize(scenarioInfo);
             await this.ScenarioCleanupAsync();
         }
         
+        [Xunit.SkippableFactAttribute(DisplayName="Deletion in Orders table is tracked in OrdersChanges table")]
+        [Xunit.TraitAttribute("FeatureTitle", "TrackingChanges")]
+        [Xunit.TraitAttribute("Description", "Deletion in Orders table is tracked in OrdersChanges table")]
+        public async System.Threading.Tasks.Task DeletionInOrdersTableIsTrackedInOrdersChangesTable()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Deletion in Orders table is tracked in OrdersChanges table", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 21
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 22
+ await testRunner.GivenAsync("source database does not have a trigger for table \"Orders\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 23
+ await testRunner.AndAsync("source database does not have a change tracking table for table \"Orders\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+                global::Reqnroll.Table table12 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table12.AddRow(new string[] {
+                            "OrderID"});
+                table12.AddRow(new string[] {
+                            "ProductID"});
+#line 24
+ await testRunner.WhenAsync("I run CreateTrigger service for table \"Orders\" with key attributes:", ((string)(null)), table12, "When ");
+#line hidden
+                global::Reqnroll.Table table13 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table13.AddRow(new string[] {
+                            "OrderID"});
+                table13.AddRow(new string[] {
+                            "ProductID"});
+#line 28
+ await testRunner.AndAsync("I run CreateChangeTrackingTable service for table \"Orders\" with key attributes:", ((string)(null)), table13, "And ");
+#line hidden
+                global::Reqnroll.Table table14 = new global::Reqnroll.Table(new string[] {
+                            "OrderID",
+                            "ProductID",
+                            "CustomerName",
+                            "Quantity"});
+                table14.AddRow(new string[] {
+                            "999",
+                            "924125",
+                            "Tom Hanks",
+                            "13"});
+#line 32
+ await testRunner.AndAsync("I delete existing row in table \"Orders\" with values:", ((string)(null)), table14, "And ");
+#line hidden
+                global::Reqnroll.Table table15 = new global::Reqnroll.Table(new string[] {
+                            "OrderID",
+                            "ProductID",
+                            "Operation"});
+                table15.AddRow(new string[] {
+                            "999",
+                            "924125",
+                            "D"});
+#line 35
+ await testRunner.ThenAsync("the table \"OrdersChanges\" should have row with values:", ((string)(null)), table15, "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="Update in Orders table is tracked in OrdersChanges table")]
+        [Xunit.TraitAttribute("FeatureTitle", "TrackingChanges")]
+        [Xunit.TraitAttribute("Description", "Update in Orders table is tracked in OrdersChanges table")]
+        public async System.Threading.Tasks.Task UpdateInOrdersTableIsTrackedInOrdersChangesTable()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Update in Orders table is tracked in OrdersChanges table", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 39
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 40
+ await testRunner.GivenAsync("source database does not have a trigger for table \"Orders\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 41
+ await testRunner.AndAsync("source database does not have a change tracking table for table \"Orders\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+                global::Reqnroll.Table table16 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table16.AddRow(new string[] {
+                            "OrderID"});
+                table16.AddRow(new string[] {
+                            "ProductID"});
+#line 42
+ await testRunner.WhenAsync("I run CreateTrigger service for table \"Orders\" with key attributes:", ((string)(null)), table16, "When ");
+#line hidden
+                global::Reqnroll.Table table17 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table17.AddRow(new string[] {
+                            "OrderID"});
+                table17.AddRow(new string[] {
+                            "ProductID"});
+#line 46
+ await testRunner.AndAsync("I run CreateChangeTrackingTable service for table \"Orders\" with key attributes:", ((string)(null)), table17, "And ");
+#line hidden
+                global::Reqnroll.Table table18 = new global::Reqnroll.Table(new string[] {
+                            "OrderID",
+                            "ProductID",
+                            "CustomerName",
+                            "Quantity"});
+                table18.AddRow(new string[] {
+                            "1",
+                            "101",
+                            "Alice Johnson",
+                            "2"});
+#line 50
+ await testRunner.AndAsync("I update existing row in table \"Orders\" with values:", ((string)(null)), table18, "And ");
+#line hidden
+                global::Reqnroll.Table table19 = new global::Reqnroll.Table(new string[] {
+                            "OrderID",
+                            "ProductID",
+                            "Operation"});
+                table19.AddRow(new string[] {
+                            "1",
+                            "101",
+                            "D"});
+#line 53
+ await testRunner.ThenAsync("the table \"OrdersChanges\" should have row with values:", ((string)(null)), table19, "Then ");
+#line hidden
+                global::Reqnroll.Table table20 = new global::Reqnroll.Table(new string[] {
+                            "OrderID",
+                            "ProductID",
+                            "Operation"});
+                table20.AddRow(new string[] {
+                            "1",
+                            "101",
+                            "I"});
+#line 56
+ await testRunner.AndAsync("the table \"OrdersChanges\" should have row with values:", ((string)(null)), table20, "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
         [System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "2.0.0.0")]
         [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
         public class FixtureData : object, Xunit.IAsyncLifetime
