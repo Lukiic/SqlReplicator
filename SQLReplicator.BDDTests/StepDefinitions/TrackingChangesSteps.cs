@@ -11,6 +11,28 @@ namespace SQLReplicator.BDDTests.StepDefinitions
     [Binding]
     public class TrackingChangesSteps
     {
+        [Given("database {string} has a trigger and an empty change tracking table for table {string} with key attributes:")]
+        public void GivenDatabaseHasATriggerAndAnEmptyChangeTrackingTableForTableWithKeyAttributes(string dbName, string tableName, Table keyAttrs)
+        {
+            ConnectionsContainer.AddConnection(dbName);
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
+
+            List<string> keyAttributes = keyAttrs.Rows.Select(row => row["AttributeName"]).ToList();
+
+            var createTriggerService = new CreateTriggerService(new ExecuteSqlCommandService(connection));
+            createTriggerService.CreateTrigger(tableName, keyAttributes);
+
+            var createChangeTrackingTable = new CreateChangeTrackingTableService(new ExecuteSqlCommandService(connection));
+            createChangeTrackingTable.CreateCTTable(tableName, keyAttributes);
+
+            string deleteCommand = $"DELETE FROM {tableName}Changes;";
+            using var command = new SqlCommand(deleteCommand, connection);
+            command.ExecuteNonQuery();
+
+            connection.Close();
+        }
+
         /*
             If provided row already exists in the table, it is deleted first.
             This ensures that INSERT command executes, and the new row is inserted as expected.
