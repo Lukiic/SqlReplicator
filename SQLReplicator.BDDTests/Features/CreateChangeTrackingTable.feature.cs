@@ -111,7 +111,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 await this.ScenarioStartAsync();
 #line 4
- await testRunner.GivenAsync("source database does not have a change tracking table for table \"Orders\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+ await testRunner.GivenAsync("database \"DB4\" does not have a change tracking table for table \"Orders\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
                 global::Reqnroll.Table table1 = new global::Reqnroll.Table(new string[] {
                             "AttributeName"});
@@ -120,13 +120,14 @@ this.ScenarioInitialize(scenarioInfo);
                 table1.AddRow(new string[] {
                             "ProductID"});
 #line 5
- await testRunner.WhenAsync("I run CreateChangeTrackingTable service for table \"Orders\" with key attributes:", ((string)(null)), table1, "When ");
+ await testRunner.WhenAsync("I run CreateChangeTrackingTable service on database \"DB4\" for table \"Orders\" with" +
+                        " key attributes:", ((string)(null)), table1, "When ");
 #line hidden
 #line 9
- await testRunner.ThenAsync("the source database should have change tracking table named \"OrdersChanges\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+ await testRunner.ThenAsync("the database \"DB4\" should have change tracking table named \"OrdersChanges\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 10
- await testRunner.AndAsync("the table named \"OrdersChanges\" should be empty", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+ await testRunner.AndAsync("table named \"OrdersChanges\" in database \"DB4\" should be empty", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();

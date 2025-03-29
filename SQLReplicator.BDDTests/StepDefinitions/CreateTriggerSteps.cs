@@ -1,4 +1,5 @@
 using System;
+using System.Xml.Linq;
 using Microsoft.Data.SqlClient;
 using Reqnroll;
 using SQLReplicator.Domain.Services;
@@ -10,20 +11,14 @@ namespace SQLReplicator.BDDTests.StepDefinitions
     [Binding]
     public class CreateTriggerSteps
     {
-        private readonly string _connectionString = "Server=localhost\\SQLExpress;Database=DB4;Trusted_Connection=True;TrustServerCertificate=True;";
-        private readonly SqlConnection _connection;
-        private readonly ICreateTriggerService _createTriggerService;
+        private ICreateTriggerService _createTriggerService;
 
-        public CreateTriggerSteps()
+        [Given("database {string} does not have a trigger for table {string}")]
+        public void GivenDatabaseDoesNotHaveATriggerForTable(string dbName, string tableName)
         {
-            _connection = new SqlConnection(_connectionString);
-            _createTriggerService = new CreateTriggerService(new ExecuteSqlCommandService(_connection));
-        }
-
-        [Given("source database does not have a trigger for table {string}")]
-        public void GivenSourceDatabaseDoesNotHaveATriggerForTable(string tableName)
-        {
-            _connection.Open();
+            ConnectionsContainer.AddConnection(dbName);
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
             string dropTriggerCommand = $@"
                 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'TR' AND name = 'TrackChanges{tableName}')
@@ -31,34 +26,39 @@ namespace SQLReplicator.BDDTests.StepDefinitions
                     DROP TRIGGER TrackChanges{tableName};
                 END";
 
-            using var command = new SqlCommand(dropTriggerCommand, _connection);
+            using var command = new SqlCommand(dropTriggerCommand, connection);
             command.ExecuteNonQuery();
-            _connection.Close();
+            connection.Close();
         }
 
-        [When("I run CreateTrigger service for table {string} with key attributes:")]
-        public void WhenIRunCreateTriggerServiceForTableWithKeyAttributes(string tableName, Table table)
+        [When("I run CreateTrigger service on database {string} for table {string} with key attributes:")]
+        public void WhenIRunCreateTriggerServiceOnDatabaseForTableWithKeyAttributes(string dbName, string tableName, Table keyAttrs)
         {
-            _connection.Open();
-            List<string> keyAttributes = table.Rows.Select(row => row["AttributeName"]).ToList();
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
+            List<string> keyAttributes = keyAttrs.Rows.Select(row => row["AttributeName"]).ToList();
+
+            _createTriggerService = new CreateTriggerService(new ExecuteSqlCommandService(connection));
             _createTriggerService.CreateTrigger(tableName, keyAttributes);
-            _connection.Close();
+
+            connection.Close();
         }
 
-        [Then("the source database should have trigger named {string}")]
-        public void ThenTheSourceDatabaseShouldHaveTriggerNamed(string triggerName)
+        [Then("the database {string} should have trigger named {string}")]
+        public void ThenTheDatabaseShouldHaveTriggerNamed(string dbName, string triggerName)
         {
-            _connection.Open();
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
             string checkTriggerCommand = $@"
-                                            SELECT COUNT(*)
-                                            FROM sys.objects
-                                            WHERE type = 'TR' AND name = '{triggerName}'";
+                                         SELECT COUNT(*)
+                                         FROM sys.objects
+                                         WHERE type = 'TR' AND name = '{triggerName}'";
 
-            using var command = new SqlCommand(checkTriggerCommand, _connection);
+            using var command = new SqlCommand(checkTriggerCommand, connection);
             int triggerCount = (int)command.ExecuteScalar();
-            _connection.Close();
+            connection.Close();
 
             Assert.Equal(1, triggerCount); 
         }

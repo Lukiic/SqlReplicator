@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
+using System.Xml.Linq;
 using Microsoft.Data.SqlClient;
 using Reqnroll;
 using SQLReplicator.Domain.Services;
@@ -13,75 +14,49 @@ namespace SQLReplicator.BDDTests.StepDefinitions
     [Binding]
     public class ReplicationSteps
     {
-        private readonly string _connectionStringSrc = "Server=localhost\\SQLExpress;Database=DB4;Trusted_Connection=True;TrustServerCertificate=True;";
-        private readonly SqlConnection _srcConnection;
-        private readonly string _connectionStringDest = "Server=localhost\\SQLExpress;Database=DB5;Trusted_Connection=True;TrustServerCertificate=True;";
-        private readonly SqlConnection _destConnection;
+        private List<string> _commandsToBeExecuted = [];
 
-        private readonly ITrackedDataToCommandsService _trackedDataToCommands;
-        private readonly IExecuteListOfCommandsService _executeListOfCommands;
-
-        public ReplicationSteps()
+        [Given("database {string} has an empty {string} table")]
+        public void GivenDatabaseHasAnEmptyTable(string dbName, string tableName)
         {
-            _srcConnection = new SqlConnection(_connectionStringSrc);
-            _destConnection = new SqlConnection(_connectionStringDest);
-
-            _trackedDataToCommands = new TrackedDataToCommandsService(new ChangeTrackingDataService(new ExecuteSqlQueryService(_srcConnection)), new SqlCommandsGenerationService());
-            _executeListOfCommands = new ExecuteListOfCommandsService(new ExecuteSqlCommandService(_destConnection));
-        }
-
-        [Given("destination database has an empty {string} table")]
-        public void GivenDestinationDatabaseHasAnEmptyTable(string tableName)
-        {
-            _destConnection.Open();
+            ConnectionsContainer.AddConnection(dbName);
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
             string deleteCommand = $"DELETE FROM {tableName};";
-            using var command = new SqlCommand(deleteCommand, _destConnection);
+            using var command = new SqlCommand(deleteCommand, connection);
             command.ExecuteNonQuery();
 
-            _destConnection.Close();
+            connection.Close();
         }
 
 
-        [When("I run services for generating and executing commands on table {string} with key attributes:")]
-        public void WhenIRunServicesForGeneratingAndExecutingCommandsOnTableWithKeyAttributes(string tableName, Table table)
+        [When("I run service for generating commands on database {string} for table {string} with key attributes:")]
+        public void WhenIRunServiceForGeneratingCommandsOnDatabaseForTableWithKeyAttributes(string dbName, string tableName, Table keyAttrs)
         {
-            _srcConnection.Open();
-            _destConnection.Open();
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
-            List<string> keyAttributes = table.Rows.Select(row => row["AttributeName"]).ToList();
-            List<string> commandsForDestServer;
-            int lastChangeID;
+            List<string> keyAttributes = keyAttrs.Rows.Select(row => row["AttributeName"]).ToList();
 
-            (commandsForDestServer, lastChangeID) = _trackedDataToCommands.GetCommandsAndLastChangeID(tableName, "1", keyAttributes);
+            TrackedDataToCommandsService trackedDataToCommands = new TrackedDataToCommandsService(new ChangeTrackingDataService(new ExecuteSqlQueryService(connection)), new SqlCommandsGenerationService());
 
-            _executeListOfCommands.ExecuteCommands(commandsForDestServer);
+            (_commandsToBeExecuted, _) = trackedDataToCommands.GetCommandsAndLastChangeID(tableName, "1", keyAttributes);
 
-            _srcConnection.Close();
-            _destConnection.Close();
+            connection.Close();
         }
 
-
-        [Then("the table {string} of destination server should have row with values:")]
-        public void ThenTheTableOfDestinationServerShouldHaveRowWithValues(string tableName, Table table)
+        [When("I run service for executing generated commands on database {string}")]
+        public void WhenIRunServiceForExecutingGeneratedCommandsOnDatabase(string dbName)
         {
-            _destConnection.Open();
-            List<string> attributes = table.Header.ToList();
-            List<string> rowValues = table.Rows[0].Values.ToList();
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
-            IEnumerable<string> attrsAssignValsFormat = attributes.Zip(rowValues, (a, v) => $"{a} = '{v}'");
-            string conditionFormat = string.Join(" AND ", attrsAssignValsFormat);
+            ExecuteListOfCommandsService executeListOfCommands = new ExecuteListOfCommandsService(new ExecuteSqlCommandService(connection));
 
-            string checkRow = $@"
-                            SELECT COUNT(*)
-                            FROM {tableName}
-                            WHERE {conditionFormat};";
+            executeListOfCommands.ExecuteCommands(_commandsToBeExecuted);
 
-            using var command = new SqlCommand(checkRow, _destConnection);
-            int rowsCount = (int)command.ExecuteScalar();
-            _destConnection.Close();
-
-            Assert.Equal(1, rowsCount);
+            connection.Close();
         }
     }
 }

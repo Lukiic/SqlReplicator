@@ -10,21 +10,14 @@ namespace SQLReplicator.BDDTests.StepDefinitions
     [Binding]
     public class CreateChangeTrackingTableSteps
     {
-        private readonly string _connectionString = "Server=localhost\\SQLExpress;Database=DB4;Trusted_Connection=True;TrustServerCertificate=True;";
-        private readonly SqlConnection _connection;
-        private readonly ICreateChangeTrackingTableService _createChangeTrackingTable;
+        private ICreateChangeTrackingTableService _createChangeTrackingTable;
 
-        public CreateChangeTrackingTableSteps()
+        [Given("database {string} does not have a change tracking table for table {string}")]
+        public void GivenDatabaseDoesNotHaveAChangeTrackingTableForTable(string dbName, string tableName)
         {
-            _connection = new SqlConnection(_connectionString);
-            _createChangeTrackingTable = new CreateChangeTrackingTableService(new ExecuteSqlCommandService(_connection));
-        }
-
-
-        [Given("source database does not have a change tracking table for table {string}")]
-        public void GivenSourceDatabaseDoesNotHaveAChangeTrackingTableForTable(string tableName)
-        {
-            _connection.Open();
+            ConnectionsContainer.AddConnection(dbName);
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
             string dropTableCommand = $@"
                 IF EXISTS (SELECT * FROM sys.tables WHERE name = '{tableName}Changes')
@@ -32,50 +25,56 @@ namespace SQLReplicator.BDDTests.StepDefinitions
                     DROP TABLE {tableName}Changes;
                 END";
 
-            using var command = new SqlCommand(dropTableCommand, _connection);
+            using var command = new SqlCommand(dropTableCommand, connection);
             command.ExecuteNonQuery();
-            _connection.Close();
+            connection.Close();
         }
 
-        [When("I run CreateChangeTrackingTable service for table {string} with key attributes:")]
-        public void WhenIRunCreateChangeTrackingTableServiceForTableWithKeyAttributes(string tableName, Table table)
+        [When("I run CreateChangeTrackingTable service on database {string} for table {string} with key attributes:")]
+        public void WhenIRunCreateChangeTrackingTableServiceOnDatabaseForTableWithKeyAttributes(string dbName, string tableName, Table keyAttrs)
         {
-            _connection.Open();
-            List<string> keyAttributes = table.Rows.Select(row => row["AttributeName"]).ToList();
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
+            List<string> keyAttributes = keyAttrs.Rows.Select(row => row["AttributeName"]).ToList();
+
+            _createChangeTrackingTable = new CreateChangeTrackingTableService(new ExecuteSqlCommandService(connection));
             _createChangeTrackingTable.CreateCTTable(tableName, keyAttributes);
-            _connection.Close();
+
+            connection.Close();
         }
 
-        [Then("the source database should have change tracking table named {string}")]
-        public void ThenTheSourceDatabaseShouldHaveChangeTrackingTableNamed(string tableName)
+        [Then("the database {string} should have change tracking table named {string}")]
+        public void ThenTheDatabaseShouldHaveChangeTrackingTableNamed(string dbName, string tableName)
         {
-            _connection.Open();
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
             string checkTableCommand = $@"
                                        SELECT COUNT(*)
                                        FROM sys.tables
                                        WHERE name = '{tableName}'";
 
-            using var command = new SqlCommand(checkTableCommand, _connection);
+            using var command = new SqlCommand(checkTableCommand, connection);
             int tableCount = (int)command.ExecuteScalar();
-            _connection.Close();
+            connection.Close();
 
             Assert.Equal(1, tableCount);
         }
 
-        [Then("the table named {string} should be empty")]
-        public void ThenTheTableNamedShouldBeEmpty(string tableName)
+        [Then("table named {string} in database {string} should be empty")]
+        public void ThenTableNamedInDatabaseShouldBeEmpty(string tableName, string dbName)
         {
-            _connection.Open();
+            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
+            connection.Open();
 
             string checkTableCommand = $@"
                                        SELECT COUNT(*)
                                        FROM {tableName}";
 
-            using var command = new SqlCommand(checkTableCommand, _connection);
+            using var command = new SqlCommand(checkTableCommand, connection);
             int rowsCount = (int)command.ExecuteScalar();
-            _connection.Close();
+            connection.Close();
 
             Assert.Equal(0, rowsCount);
         }
