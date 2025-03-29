@@ -28,7 +28,6 @@ namespace SQLReplicator.Services.CommandExecutionServices
                 }
                 catch (Exception)
                 {
-                    transactionManager.Rollback();
                     throw;
                 }
             }
