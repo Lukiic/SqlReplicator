@@ -39,7 +39,7 @@
             string conditionFormat = string.Join(" AND ", keyAttrsAssignValsFormat);
 
             IEnumerable<string> attrsAssignValsFormat = attributes.Zip(values, (a, v) => v == null ? $"{a} = NULL" : $"{a} = '{v}'");
-            string setFormat = string.Join(" AND ", attrsAssignValsFormat);
+            string setFormat = string.Join(", ", attrsAssignValsFormat);
 
             return $"UPDATE {tableName} SET {setFormat} WHERE {conditionFormat};";
         }
