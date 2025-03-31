@@ -113,48 +113,48 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-                global::Reqnroll.Table table15 = new global::Reqnroll.Table(new string[] {
-                            "AttributeName"});
-                table15.AddRow(new string[] {
-                            "OrderID"});
-                table15.AddRow(new string[] {
-                            "ProductID"});
-#line 4
- await testRunner.GivenAsync("database \"DB4\" has a trigger and an empty change tracking table for table \"Orders" +
-                        "\" with key attributes:", ((string)(null)), table15, "Given ");
-#line hidden
                 global::Reqnroll.Table table16 = new global::Reqnroll.Table(new string[] {
                             "AttributeName"});
                 table16.AddRow(new string[] {
                             "OrderID"});
                 table16.AddRow(new string[] {
                             "ProductID"});
-#line 8
- await testRunner.AndAsync("database \"DB5\" has a trigger and an empty change tracking table for table \"Orders" +
-                        "\" with key attributes:", ((string)(null)), table16, "And ");
+#line 4
+ await testRunner.GivenAsync("database \"DB4\" has a trigger and an empty change tracking table for table \"Orders" +
+                        "\" with key attributes:", ((string)(null)), table16, "Given ");
 #line hidden
                 global::Reqnroll.Table table17 = new global::Reqnroll.Table(new string[] {
+                            "AttributeName"});
+                table17.AddRow(new string[] {
+                            "OrderID"});
+                table17.AddRow(new string[] {
+                            "ProductID"});
+#line 8
+ await testRunner.AndAsync("database \"DB5\" has a trigger and an empty change tracking table for table \"Orders" +
+                        "\" with key attributes:", ((string)(null)), table17, "And ");
+#line hidden
+                global::Reqnroll.Table table18 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
                             "CustomerName",
                             "Quantity"});
-                table17.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "998",
                             "924124",
                             "Tom Hanks",
                             "12"});
 #line 12
- await testRunner.WhenAsync("I insert new row in database \"DB4\" table \"Orders\" with values:", ((string)(null)), table17, "When ");
+ await testRunner.WhenAsync("I insert new row in database \"DB4\" table \"Orders\" with values:", ((string)(null)), table18, "When ");
 #line hidden
-                global::Reqnroll.Table table18 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table19 = new global::Reqnroll.Table(new string[] {
                             "AttributeName"});
-                table18.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "OrderID"});
-                table18.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "ProductID"});
 #line 15
  await testRunner.AndAsync("I run service for generating commands on database \"DB4\" for table \"Orders\" with k" +
-                        "ey attributes:", ((string)(null)), table18, "And ");
+                        "ey attributes:", ((string)(null)), table19, "And ");
 #line hidden
 #line 19
  await testRunner.AndAsync("I run service for executing generated commands on database \"DB5\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");

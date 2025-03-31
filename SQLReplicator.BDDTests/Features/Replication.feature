@@ -24,6 +24,9 @@ Scenario: Update in Orders table of source server causes update in Orders table 
 		| OrderID       |
 		| ProductID     |
 	And database "DB5" has an empty "Orders" table
+	When I insert new row in database "DB5" table "Orders" with values:
+		| OrderID	| ProductID	| CustomerName	| Quantity	|
+		| 1			| 101		| Alice Johnson	| 2			|
 	When I update existing row in database "DB4" table "Orders" with values:
 		| OrderID	| ProductID	| CustomerName	| Quantity	|
 		| 1			| 101		| Alice Johnson	| 2			|

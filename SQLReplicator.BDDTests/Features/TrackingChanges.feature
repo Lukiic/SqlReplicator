@@ -34,7 +34,4 @@ Scenario: Update in Orders table is tracked in OrdersChanges table
 		| 1			| 101		| Alice Johnson	| 2			|
 	Then the table "OrdersChanges" in database "DB4" should have row with values:
 		| OrderID	| ProductID	| Operation	|
-		| 1			| 101		| D			|
-	And the table "OrdersChanges" in database "DB4" should have row with values:
-		| OrderID	| ProductID	| Operation	|
-		| 1			| 101		| I			|
+		| 1			| 101		| U			|

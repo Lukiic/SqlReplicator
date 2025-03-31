@@ -37,11 +37,7 @@ namespace SQLReplicator.Services.ChangeTrackingServices
 											IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
 											BEGIN
 												INSERT INTO {tableName}Changes
-												SELECT {keyAttributesCSV}, ''D'', 0, 0						-- Deleting old values
-												FROM deleted;
-
-												INSERT INTO {tableName}Changes
-												SELECT {keyAttributesCSV}, ''I'', 0, 0						-- Inserting new (updated) values
+												SELECT {keyAttributesCSV}, ''U'', 0, 0
 												FROM inserted;
 											END
 
