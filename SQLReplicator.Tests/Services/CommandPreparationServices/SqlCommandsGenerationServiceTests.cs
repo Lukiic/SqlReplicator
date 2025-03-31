@@ -30,10 +30,10 @@ namespace SQLReplicator.Tests.Services.CommandPreparationServices
             listOfValues = new List<List<string>>() {
                 new List<string>() { "1", "2", "3", "I", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" },
                 new List<string>() { "4", "5", "6", "D", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" },
-                new List<string>() { "7", "8", "9", "I", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" }
+                new List<string>() { "7", "8", "9", "U", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" }
             };
             listOfWrongValues = new List<List<string>>() {
-                new List<string>() { "1", "2", "3", "U", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" },
+                new List<string>() { "1", "2", "3", "M", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" },
                 new List<string>() { "4", "5", "6", "F", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" },
                 new List<string>() { "7", "8", "9", "O", "99", "0", "0", "Attr1Val", "Attr2Val", "Attr3Val" }
             };
