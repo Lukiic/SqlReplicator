@@ -27,6 +27,23 @@
             return $"DELETE FROM {tableName} WHERE {conditionFormat};";
         }
 
+        public static string GetUpdateCommand(string tableName, List<string> keyAttrs, List<string?> keyValues, List<string> attributes, List<string?> values)
+        {
+            ValidateArguments(tableName, attributes, values);
+            ValidateArguments(tableName, keyAttrs, keyValues);
+
+            values = RemoveExtraValues(attributes, values);
+            keyValues = RemoveExtraValues(keyAttrs, keyValues);
+
+            IEnumerable<string> keyAttrsAssignValsFormat = keyAttrs.Zip(keyValues, (a, v) => $"{a} = '{v}'");
+            string conditionFormat = string.Join(" AND ", keyAttrsAssignValsFormat);
+
+            IEnumerable<string> attrsAssignValsFormat = attributes.Zip(values, (a, v) => v == null ? $"{a} = NULL" : $"{a} = '{v}'");
+            string setFormat = string.Join(" AND ", attrsAssignValsFormat);
+
+            return $"UPDATE {tableName} SET {setFormat} WHERE {conditionFormat};";
+        }
+
         private static void ValidateArguments(string tableName, List<string> attributes, List<string?> values)
         {
             if (string.IsNullOrWhiteSpace(tableName))
