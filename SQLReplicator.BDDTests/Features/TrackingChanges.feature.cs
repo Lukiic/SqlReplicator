@@ -110,39 +110,39 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-                global::Reqnroll.Table table15 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table19 = new global::Reqnroll.Table(new string[] {
                             "AttributeName"});
-                table15.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "OrderID"});
-                table15.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "ProductID"});
 #line 4
  await testRunner.GivenAsync("database \"DB4\" has a trigger and an empty change tracking table for table \"Orders" +
-                        "\" with key attributes:", ((string)(null)), table15, "Given ");
+                        "\" with key attributes:", ((string)(null)), table19, "Given ");
 #line hidden
-                global::Reqnroll.Table table16 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table20 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
                             "CustomerName",
                             "Quantity"});
-                table16.AddRow(new string[] {
+                table20.AddRow(new string[] {
                             "998",
                             "924124",
                             "Tom Hanks",
                             "12"});
 #line 8
- await testRunner.WhenAsync("I insert new row in database \"DB4\" table \"Orders\" with values:", ((string)(null)), table16, "When ");
+ await testRunner.WhenAsync("I insert new row in database \"DB4\" table \"Orders\" with values:", ((string)(null)), table20, "When ");
 #line hidden
-                global::Reqnroll.Table table17 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table21 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
                             "Operation"});
-                table17.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "998",
                             "924124",
                             "I"});
 #line 11
- await testRunner.ThenAsync("the table \"OrdersChanges\" in database \"DB4\" should have row with values:", ((string)(null)), table17, "Then ");
+ await testRunner.ThenAsync("the table \"OrdersChanges\" in database \"DB4\" should have row with values:", ((string)(null)), table21, "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -166,39 +166,39 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-                global::Reqnroll.Table table18 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table22 = new global::Reqnroll.Table(new string[] {
                             "AttributeName"});
-                table18.AddRow(new string[] {
+                table22.AddRow(new string[] {
                             "OrderID"});
-                table18.AddRow(new string[] {
+                table22.AddRow(new string[] {
                             "ProductID"});
 #line 16
  await testRunner.GivenAsync("database \"DB4\" has a trigger and an empty change tracking table for table \"Orders" +
-                        "\" with key attributes:", ((string)(null)), table18, "Given ");
+                        "\" with key attributes:", ((string)(null)), table22, "Given ");
 #line hidden
-                global::Reqnroll.Table table19 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table23 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
                             "CustomerName",
                             "Quantity"});
-                table19.AddRow(new string[] {
+                table23.AddRow(new string[] {
                             "999",
                             "924125",
                             "Tom Hanks",
                             "13"});
 #line 20
- await testRunner.WhenAsync("I delete existing row in database \"DB4\" table \"Orders\" with values:", ((string)(null)), table19, "When ");
+ await testRunner.WhenAsync("I delete existing row in database \"DB4\" table \"Orders\" with values:", ((string)(null)), table23, "When ");
 #line hidden
-                global::Reqnroll.Table table20 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table24 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
                             "Operation"});
-                table20.AddRow(new string[] {
+                table24.AddRow(new string[] {
                             "999",
                             "924125",
                             "D"});
 #line 23
- await testRunner.ThenAsync("the table \"OrdersChanges\" in database \"DB4\" should have row with values:", ((string)(null)), table20, "Then ");
+ await testRunner.ThenAsync("the table \"OrdersChanges\" in database \"DB4\" should have row with values:", ((string)(null)), table24, "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -222,50 +222,50 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-                global::Reqnroll.Table table21 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table25 = new global::Reqnroll.Table(new string[] {
                             "AttributeName"});
-                table21.AddRow(new string[] {
+                table25.AddRow(new string[] {
                             "OrderID"});
-                table21.AddRow(new string[] {
+                table25.AddRow(new string[] {
                             "ProductID"});
 #line 28
  await testRunner.GivenAsync("database \"DB4\" has a trigger and an empty change tracking table for table \"Orders" +
-                        "\" with key attributes:", ((string)(null)), table21, "Given ");
+                        "\" with key attributes:", ((string)(null)), table25, "Given ");
 #line hidden
-                global::Reqnroll.Table table22 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table26 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
                             "CustomerName",
                             "Quantity"});
-                table22.AddRow(new string[] {
+                table26.AddRow(new string[] {
                             "1",
                             "101",
                             "Alice Johnson",
                             "2"});
 #line 32
- await testRunner.WhenAsync("I update existing row in database \"DB4\" table \"Orders\" with values:", ((string)(null)), table22, "When ");
+ await testRunner.WhenAsync("I update existing row in database \"DB4\" table \"Orders\" with values:", ((string)(null)), table26, "When ");
 #line hidden
-                global::Reqnroll.Table table23 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table27 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
                             "Operation"});
-                table23.AddRow(new string[] {
+                table27.AddRow(new string[] {
                             "1",
                             "101",
                             "D"});
 #line 35
- await testRunner.ThenAsync("the table \"OrdersChanges\" in database \"DB4\" should have row with values:", ((string)(null)), table23, "Then ");
+ await testRunner.ThenAsync("the table \"OrdersChanges\" in database \"DB4\" should have row with values:", ((string)(null)), table27, "Then ");
 #line hidden
-                global::Reqnroll.Table table24 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table28 = new global::Reqnroll.Table(new string[] {
                             "OrderID",
                             "ProductID",
                             "Operation"});
-                table24.AddRow(new string[] {
+                table28.AddRow(new string[] {
                             "1",
                             "101",
                             "I"});
 #line 38
- await testRunner.AndAsync("the table \"OrdersChanges\" in database \"DB4\" should have row with values:", ((string)(null)), table24, "And ");
+ await testRunner.AndAsync("the table \"OrdersChanges\" in database \"DB4\" should have row with values:", ((string)(null)), table28, "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
