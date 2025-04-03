@@ -15,7 +15,6 @@ namespace SQLReplicator.BDDTests.StepDefinitions
         [Given("database {string} does not have a change tracking table for table {string}")]
         public void GivenDatabaseDoesNotHaveAChangeTrackingTableForTable(string dbName, string tableName)
         {
-            ConnectionsContainer.AddConnection(dbName);
             SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
             connection.Open();
 

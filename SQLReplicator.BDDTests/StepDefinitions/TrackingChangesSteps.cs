@@ -14,7 +14,6 @@ namespace SQLReplicator.BDDTests.StepDefinitions
         [Given("database {string} has a trigger and an empty change tracking table for table {string} with key attributes:")]
         public void GivenDatabaseHasATriggerAndAnEmptyChangeTrackingTableForTableWithKeyAttributes(string dbName, string tableName, Table keyAttrs)
         {
-            ConnectionsContainer.AddConnection(dbName);
             SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
             connection.Open();
 
@@ -107,7 +106,11 @@ namespace SQLReplicator.BDDTests.StepDefinitions
             SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
             connection.Open();
 
+            string insertCommandSyntax = GetInsertCommand(tableName, rowValues);
             string updateCommandSyntax = GetUpdateCommand(tableName, rowValues);
+
+            using var insertCommand = new SqlCommand(insertCommandSyntax, connection);
+            insertCommand.ExecuteNonQuery();
 
             using var updateCommand = new SqlCommand(updateCommandSyntax, connection);
             updateCommand.ExecuteNonQuery();

@@ -16,21 +16,6 @@ namespace SQLReplicator.BDDTests.StepDefinitions
     {
         private List<string> _commandsToBeExecuted = [];
 
-        [Given("database {string} has an empty {string} table")]
-        public void GivenDatabaseHasAnEmptyTable(string dbName, string tableName)
-        {
-            ConnectionsContainer.AddConnection(dbName);
-            SqlConnection connection = ConnectionsContainer.GetConnection(dbName);
-            connection.Open();
-
-            string deleteCommand = $"DELETE FROM {tableName};";
-            using var command = new SqlCommand(deleteCommand, connection);
-            command.ExecuteNonQuery();
-
-            connection.Close();
-        }
-
-
         [When("I run service for generating commands on database {string} for table {string} with key attributes:")]
         public void WhenIRunServiceForGeneratingCommandsOnDatabaseForTableWithKeyAttributes(string dbName, string tableName, Table keyAttrs)
         {
