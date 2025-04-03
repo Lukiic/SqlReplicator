@@ -18,16 +18,17 @@ namespace SQLReplicator.Services.CommandExecutionServices
         {
             ValidateArguments(commands);
 
-            using (DbTransactionManager transactionManager = new DbTransactionManager(_connection))
+            using (SqlTransaction transaction = _connection.BeginTransaction())
             {
                 try
                 {
-                    SqlCommand sqlCommand = new SqlCommand(commands, _connection, transactionManager.Transaction);
+                    using SqlCommand sqlCommand = new SqlCommand(commands, _connection, transaction);
                     sqlCommand.ExecuteNonQuery();
-                    transactionManager.Commit();
+                    transaction.Commit();
                 }
                 catch (Exception)
                 {
+                    transaction.Rollback();
                     throw;
                 }
             }
