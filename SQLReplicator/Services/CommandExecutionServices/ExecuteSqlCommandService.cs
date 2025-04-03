@@ -1,5 +1,4 @@
 ﻿using Microsoft.Data.SqlClient;
-using SQLReplicator.Domain.Models;
 using SQLReplicator.Domain.Services;
 
 namespace SQLReplicator.Services.CommandExecutionServices

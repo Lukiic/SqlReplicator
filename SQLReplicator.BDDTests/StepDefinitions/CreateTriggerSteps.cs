@@ -1,7 +1,4 @@
-using System;
-using System.Xml.Linq;
 using Microsoft.Data.SqlClient;
-using Reqnroll;
 using SQLReplicator.Domain.Services;
 using SQLReplicator.Services.ChangeTrackingServices;
 using SQLReplicator.Services.CommandExecutionServices;
@@ -59,7 +56,7 @@ namespace SQLReplicator.BDDTests.StepDefinitions
             int triggerCount = (int)command.ExecuteScalar();
             connection.Close();
 
-            Assert.Equal(1, triggerCount); 
+            Assert.Equal(1, triggerCount);
         }
     }
 }

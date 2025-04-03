@@ -1,6 +1,4 @@
-using System;
 using Microsoft.Data.SqlClient;
-using Reqnroll;
 using SQLReplicator.Domain.Services;
 using SQLReplicator.Services.ChangeTrackingServices;
 using SQLReplicator.Services.CommandExecutionServices;
